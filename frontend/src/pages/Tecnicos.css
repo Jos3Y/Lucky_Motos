@@ -1,0 +1,112 @@
+.tecnicos-page {
+  padding: 20px;
+}
+
+.tecnicos-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.tecnicos-list h2,
+.disponibilidad-container h2 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.tecnicos-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.tecnico-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tecnico-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.tecnico-card.selected {
+  border: 2px solid #3498db;
+  background-color: #ebf5fb;
+}
+
+.tecnico-info h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+}
+
+.tecnico-info p {
+  margin: 5px 0;
+  color: #7f8c8d;
+}
+
+.disponibilidad-container {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.disponibilidad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.disponibilidad-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.dia {
+  font-weight: 600;
+  color: #2c3e50;
+  min-width: 100px;
+}
+
+.horario {
+  color: #7f8c8d;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status.disponible {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.no-disponible {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.no-disponibilidad {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}
+
+@media (max-width: 968px) {
+  .tecnicos-container {
+    grid-template-columns: 1fr;
+  }
+}
+
