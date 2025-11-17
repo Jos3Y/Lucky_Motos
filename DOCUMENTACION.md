@@ -56,9 +56,10 @@ mysql -u root lucky_motos < lucky_motos\ \(1\).sql
 
 ```powershell
 cd C:\xampp\htdocs\sistemamotoservice
-# detiene procesos Java viejos (opcional)
+# detener procesos Java viejos (opcional)
 Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-mvn spring-boot:run -DskipTests
+mvn clean package -DskipTests   # genera target/classes y evita ClassNotFound
+mvn spring-boot:run -DskipTests # si solo requieres el backend
 ```
 
 Detalles:
@@ -75,13 +76,15 @@ Detalles:
 ```powershell
 cd C:\xampp\htdocs\sistemamotoservice\frontend
 npm install   # primera vez
-npm run dev   # Vite en puerto 3002
+npm run dev   # Server dev en puerto 3002
 ```
 
 - La URL por defecto: [http://localhost:3002](http://localhost:3002).
 - El proxy de Vite enruta `/api` al backend.
 
 > Para build de producción: `npm run build` y servir el contenido de `frontend/dist` (si se quisiera integrar con Spring estático).
+
+> **Importante:** desde la terminal en la carpeta `frontend` es donde debes permanecer con `npm run dev` activo. No cierres esa consola mientras trabajas, porque de lo contrario `localhost:3002` dará `ERR_CONNECTION_REFUSED`.
 
 ---
 

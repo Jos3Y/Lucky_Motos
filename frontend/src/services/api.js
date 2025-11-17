@@ -95,11 +95,16 @@ export const motosAPI = {
 
 // API de Socios/Usuarios
 export const sociosAPI = {
-  getAll: () => axios.get('/socio'),
-  getById: (id) => axios.get(`/socio/${id}`),
-  create: (data) => axios.post('/socio/save', data),
-  update: (id, data) => axios.put(`/socio/update/${id}`, data),
-  delete: (id) => axios.delete(`/socio/${id}`)
+  getAll: () => axios.get('/api/socio'),
+  getById: (id) => axios.get(`/api/socio/${id}`),
+  create: (data) => axios.post('/api/socio/save', data),
+  update: (id, data) => axios.put(`/api/socio/update/${id}`, data),
+  delete: (id) => axios.delete(`/api/socio/${id}`)
+}
+
+export const rolSocioAPI = {
+  assign: (data) => axios.post('/api/rol-socio/asignar', data),
+  remove: (data) => axios.post('/api/rol-socio/quitar', data)
 }
 
 // API de Reportes

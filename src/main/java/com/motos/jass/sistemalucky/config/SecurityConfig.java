@@ -47,6 +47,8 @@
                             .requestMatchers("/api/clientes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
                             .requestMatchers("/api/repuestos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
                             .requestMatchers("/api/tecnicos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/socio/**").hasAnyRole("ADMIN")
+                            .requestMatchers("/api/rol-socio/**").hasRole("ADMIN")
                             .requestMatchers("/api/tipos-servicio/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
                             .requestMatchers("/api/comprobantes/view/**").permitAll()
                             .requestMatchers("/api/comprobantes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")

@@ -1,12 +1,21 @@
 import { useState, useEffect, useMemo } from 'react'
 import Swal from 'sweetalert2'
-import { tecnicosAPI, sociosAPI, citasAPI } from '../services/api'
+import { tecnicosAPI, sociosAPI, citasAPI, tiposServicioAPI, rolSocioAPI } from '../services/api'
 import './Tecnicos.css'
 
 const initialFormData = {
   socioId: '',
   especialidad: '',
-  estado: 'DISPONIBLE'
+  estado: 'DISPONIBLE',
+  nombre: '',
+  apellidos: '',
+  correo: '',
+  telefono: '',
+  dni: '',
+  genero: 'MASCULINO',
+  estadoCivil: 'SOLTERO',
+  contrasena: '',
+  rol: 'ROLE_TECNICO'
 }
 
 const HOURS = Array.from({ length: 13 }, (_, idx) => 8 + idx) // 8am - 20pm
@@ -39,6 +48,7 @@ const normalizeArray = (payload) => {
 const Tecnicos = () => {
   const [tecnicos, setTecnicos] = useState([])
   const [socios, setSocios] = useState([])
+  const [tiposServicio, setTiposServicio] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState(initialFormData)
@@ -56,12 +66,14 @@ const Tecnicos = () => {
   const loadData = async () => {
     try {
       setLoading(true)
-      const [tecRes, socioRes] = await Promise.all([
+      const [tecRes, socioRes, tipoRes] = await Promise.all([
         tecnicosAPI.getAll(),
-        sociosAPI.getAll()
+        sociosAPI.getAll(),
+        tiposServicioAPI.getAll()
       ])
       setTecnicos(normalizeArray(tecRes.data))
       setSocios(normalizeArray(socioRes.data))
+      setTiposServicio(normalizeArray(tipoRes.data))
     } catch (error) {
       console.error('Error cargando datos de técnicos:', error)
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cargar la información', confirmButtonColor: '#2c3e50' })
@@ -82,24 +94,52 @@ const Tecnicos = () => {
     }
   }
 
-  const assignedSocios = useMemo(() => new Set(tecnicos.map(t => t.socioId)), [tecnicos])
-
-  const availableSocios = socios.filter(s => !assignedSocios.has(s.id) || (editingTecnico && editingTecnico.socioId === s.id))
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!editingTecnico && !formData.socioId) {
-      Swal.fire({ icon: 'warning', title: 'Seleccione un socio', confirmButtonColor: '#2c3e50' })
+    if (!formData.especialidad) {
+      Swal.fire({ icon: 'warning', title: 'Seleccione una especialidad', confirmButtonColor: '#2c3e50' })
+      return
+    }
+    if (!editingTecnico && (!formData.contrasena || formData.contrasena.length < 6)) {
+      Swal.fire({ icon: 'warning', title: 'Defina una contraseña (mínimo 6 caracteres)', confirmButtonColor: '#2c3e50' })
       return
     }
     try {
+      const socioPayload = {
+        nombre: formData.nombre,
+        apellidos: formData.apellidos,
+        correo: formData.correo,
+        telefono: formData.telefono,
+        dni: formData.dni,
+        genero: formData.genero,
+        estadoCivil: formData.estadoCivil
+      }
+      let socioId = formData.socioId
+
       if (editingTecnico) {
-        await tecnicosAPI.update(editingTecnico.id, formData)
+        if (formData.contrasena) {
+          socioPayload.contrasena = formData.contrasena
+        }
+        await sociosAPI.update(editingTecnico.socioId, socioPayload)
+        await tecnicosAPI.update(editingTecnico.id, { ...formData, socioId: editingTecnico.socioId })
+        socioId = editingTecnico.socioId
         Swal.fire({ icon: 'success', title: 'Técnico actualizado', confirmButtonColor: '#2c3e50' })
       } else {
-        await tecnicosAPI.create(formData)
+        const resp = await sociosAPI.create({ ...socioPayload, contrasena: formData.contrasena })
+        socioId = resp.data?.idSocio ?? resp.data?.id ?? resp.data?.socioId
+        await tecnicosAPI.create({ ...formData, socioId })
         Swal.fire({ icon: 'success', title: 'Técnico creado', confirmButtonColor: '#2c3e50' })
       }
+
+      if (formData.rol && formData.correo) {
+        await rolSocioAPI.assign({
+          correoSocio: formData.correo,
+          nombreRol: formData.rol,
+          descripcion: 'Asignado desde gestión de técnicos',
+          estado: 'ACTIVO'
+        })
+      }
+
       setShowForm(false)
       setEditingTecnico(null)
       setFormData(initialFormData)
@@ -290,10 +330,20 @@ const Tecnicos = () => {
                         <button className="btn-link" onClick={() => handleSelectTecnico(tecnico)}>Agenda</button>
                         <button className="btn-link" onClick={() => {
                           setEditingTecnico(tecnico)
+                          const socio = socios.find(s => (s.id ?? s.idSocio) === tecnico.socioId)
                           setFormData({
                             socioId: tecnico.socioId,
                             especialidad: tecnico.especialidad || '',
-                            estado: tecnico.estado
+                            estado: tecnico.estado,
+                            nombre: socio?.nombres || socio?.nombre || tecnico.nombre || '',
+                            apellidos: socio?.apellidos || tecnico.apellidos || '',
+                            correo: socio?.correo || tecnico.correo || '',
+                            telefono: socio?.telefono || tecnico.telefono || '',
+                            dni: socio?.dni || '',
+                            genero: socio?.genero || 'MASCULINO',
+                            estadoCivil: socio?.estadoCivil || 'SOLTERO',
+                            contrasena: '',
+                            rol: 'ROLE_TECNICO'
                           })
                           setShowForm(true)
                         }}>Editar</button>
@@ -369,32 +419,109 @@ const Tecnicos = () => {
               <button className="close-modal" onClick={() => { setShowForm(false); setEditingTecnico(null) }}>✕</button>
             </div>
             <form onSubmit={handleSubmit} className="tecnico-form">
-              {!editingTecnico && (
+              <div className="form-row">
                 <div className="form-group">
-                  <label>Socio</label>
-                  <select
-                    value={formData.socioId}
-                    onChange={(e) => setFormData({ ...formData, socioId: Number(e.target.value) })}
+                  <label>Nombres</label>
+                  <input
+                    type="text"
+                    value={formData.nombre}
+                    onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                    placeholder="Nombres completos"
                     required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Apellidos</label>
+                  <input
+                    type="text"
+                    value={formData.apellidos}
+                    onChange={(e) => setFormData({ ...formData, apellidos: e.target.value })}
+                    placeholder="Apellidos"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>DNI</label>
+                  <input
+                    type="text"
+                    value={formData.dni}
+                    onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
+                    placeholder="Documento"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Género</label>
+                  <select
+                    value={formData.genero}
+                    onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
                   >
-                    <option value="">Seleccione un socio</option>
-                    {availableSocios.map(socio => (
-                      <option key={socio.id} value={socio.id}>
-                        {socio.nombre} {socio.apellidos} - {socio.correo}
-                      </option>
-                    ))}
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMENINO">Femenino</option>
                   </select>
                 </div>
+                <div className="form-group">
+                  <label>Estado civil</label>
+                  <select
+                    value={formData.estadoCivil}
+                    onChange={(e) => setFormData({ ...formData, estadoCivil: e.target.value })}
+                  >
+                    <option value="SOLTERO">Soltero</option>
+                    <option value="CASADO">Casado</option>
+                    <option value="DIVORCIADO">Divorciado</option>
+                    <option value="VIUDO">Viudo</option>
+                  </select>
+                </div>
+              </div>
+              {!editingTecnico && (
+                <div className="form-group">
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    value={formData.contrasena}
+                    onChange={(e) => setFormData({ ...formData, contrasena: e.target.value })}
+                    placeholder="Contraseña para el usuario"
+                    required={!editingTecnico}
+                  />
+                </div>
               )}
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Correo</label>
+                  <input
+                    type="email"
+                    value={formData.correo}
+                    onChange={(e) => setFormData({ ...formData, correo: e.target.value })}
+                    placeholder="correo@ejemplo.com"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Teléfono</label>
+                  <input
+                    type="tel"
+                    value={formData.telefono}
+                    onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                    placeholder="999999999"
+                    required
+                  />
+                </div>
+              </div>
               <div className="form-group">
                 <label>Especialidad</label>
-                <input
-                  type="text"
+                <select
                   value={formData.especialidad}
                   onChange={(e) => setFormData({ ...formData, especialidad: e.target.value })}
-                  placeholder="Ej: Mecánica general"
                   required
-                />
+                >
+                  <option value="">Seleccione una especialidad</option>
+                  {tiposServicio.map(tipo => (
+                    <option key={tipo.id || tipo.id_tipo_servicio} value={tipo.nombre}>
+                      {tipo.nombre}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>Estado</label>
@@ -405,6 +532,16 @@ const Tecnicos = () => {
                   <option value="DISPONIBLE">Disponible</option>
                   <option value="OCUPADO">Ocupado</option>
                   <option value="INACTIVO">Inactivo</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Rol del usuario</label>
+                <select
+                  value={formData.rol}
+                  onChange={(e) => setFormData({ ...formData, rol: e.target.value })}
+                >
+                  <option value="ROLE_TECNICO">Técnico</option>
+                  <option value="ROLE_RECEPCIONISTA">Recepcionista</option>
                 </select>
               </div>
               <div className="modal-actions">

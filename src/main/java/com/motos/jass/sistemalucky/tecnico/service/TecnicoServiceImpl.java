@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,6 +108,11 @@ public class TecnicoServiceImpl implements TecnicoService {
                 socioRepository.findById(socioId)
                         .orElseThrow(() -> new RuntimeException("Socio no encontrado"))
         );
+
+        if (request.getNombre() != null) socio.setNombre(request.getNombre());
+        if (request.getApellidos() != null) socio.setApellidos(request.getApellidos());
+        if (request.getCorreo() != null) socio.setCorreo(request.getCorreo());
+        if (request.getTelefono() != null) socio.setTelefono(request.getTelefono());
         
         Tecnico tecnico = Tecnico.builder()
                 .socio(socio)
@@ -117,9 +121,9 @@ public class TecnicoServiceImpl implements TecnicoService {
                 .build();
         
         aplicarHorarioDefault(tecnico);
-        return Optional.ofNullable(tecnicoRepository.save(tecnico))
-                .map(tecnicoMapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("No se pudo registrar el técnico"));
+        Tecnico guardado = tecnicoRepository.save(tecnico);
+        TecnicoResponseDTO dto = tecnicoMapper.toResponseDTO(guardado);
+        return Objects.requireNonNull(dto, "No se pudo registrar el técnico");
     }
 
     @Override
@@ -134,12 +138,24 @@ public class TecnicoServiceImpl implements TecnicoService {
         if (request.getEspecialidad() != null) {
             tecnico.setEspecialidad(request.getEspecialidad());
         }
+        if (request.getNombre() != null) {
+            tecnico.getSocio().setNombre(request.getNombre());
+        }
+        if (request.getApellidos() != null) {
+            tecnico.getSocio().setApellidos(request.getApellidos());
+        }
+        if (request.getCorreo() != null) {
+            tecnico.getSocio().setCorreo(request.getCorreo());
+        }
+        if (request.getTelefono() != null) {
+            tecnico.getSocio().setTelefono(request.getTelefono());
+        }
         if (request.getEstado() != null) {
             tecnico.setEstado(parseEstado(request.getEstado()));
         }
-        return Optional.ofNullable(tecnicoRepository.save(tecnico))
-                .map(tecnicoMapper::toResponseDTO)
-                .orElseThrow(() -> new RuntimeException("No se pudo actualizar el técnico"));
+        Tecnico actualizado = tecnicoRepository.save(tecnico);
+        TecnicoResponseDTO dto = tecnicoMapper.toResponseDTO(actualizado);
+        return Objects.requireNonNull(dto, "No se pudo actualizar el técnico");
     }
 
     @Override

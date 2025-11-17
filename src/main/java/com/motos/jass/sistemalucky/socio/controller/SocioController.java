@@ -15,7 +15,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/socio")
+@RequestMapping({"/socio", "/api/socio"})
 public class SocioController {
 
     private final SocioService socioService;
