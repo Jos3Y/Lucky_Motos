@@ -45,6 +45,7 @@ public class CitaResponseDTO {
         private String dni;
         private String telefono;
         private String correo;
+        private String direccion;
     }
 
     @Data

@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ArranqueController {
 
-    private ArranqueService arranqueService;
-    private ArranqueMapper mapper;
+    private final ArranqueService arranqueService;
+    private final ArranqueMapper mapper;
 }

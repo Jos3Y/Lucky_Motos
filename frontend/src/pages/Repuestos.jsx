@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
+import Swal from 'sweetalert2'
 import { repuestosAPI } from '../services/api'
 import './Repuestos.css'
+
+const initialFormData = {
+  nombre: '',
+  marca: '',
+  modeloCompatible: '',
+  stock: 0,
+  precio: 0
+}
 
 const Repuestos = () => {
   const [repuestos, setRepuestos] = useState([])
@@ -11,13 +20,8 @@ const Repuestos = () => {
     repuesto: ''
   })
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({
-    nombre: '',
-    marca: '',
-    modeloCompatible: '',
-    stock: 0,
-    precio: 0
-  })
+  const [formData, setFormData] = useState(initialFormData)
+  const [editingRepuesto, setEditingRepuesto] = useState(null)
 
   useEffect(() => {
     loadRepuestos()
@@ -25,10 +29,37 @@ const Repuestos = () => {
 
   const loadRepuestos = async () => {
     try {
-      const response = await repuestosAPI.getAll(filters)
-      setRepuestos(response.data)
+      setLoading(true)
+      // Filtrar solo los parámetros que tienen valores
+      const params = {}
+      if (filters.marca && filters.marca.trim() !== '') {
+        params.marca = filters.marca
+      }
+      if (filters.modelo && filters.modelo.trim() !== '') {
+        params.modelo = filters.modelo
+      }
+      if (filters.repuesto && filters.repuesto.trim() !== '') {
+        params.repuesto = filters.repuesto
+      }
+
+      console.log('DEBUG Frontend - Filtros originales:', filters)
+      console.log('DEBUG Frontend - Parámetros a enviar:', params)
+      console.log('DEBUG Frontend - URL:', '/api/repuestos')
+
+      const response = await repuestosAPI.getAll(params)
+      console.log('DEBUG Frontend - Respuesta completa:', response)
+      console.log('DEBUG Frontend - Response data:', response.data)
+      console.log('DEBUG Frontend - Tipo de data:', typeof response.data)
+      console.log('DEBUG Frontend - Es array?', Array.isArray(response.data))
+      console.log('DEBUG Frontend - Cantidad de repuestos:', response.data?.length || 0)
+
+      setRepuestos(response.data || [])
+      console.log('Repuestos recibidos:', response.data)
     } catch (error) {
       console.error('Error cargando repuestos:', error)
+      console.error('Error response:', error.response)
+      console.error('Error data:', error.response?.data)
+      setRepuestos([])
     } finally {
       setLoading(false)
     }
@@ -38,16 +69,80 @@ const Repuestos = () => {
     loadRepuestos()
   }
 
+  const handleEditRepuesto = (repuesto) => {
+    setFormData({
+      nombre: repuesto.nombre || '',
+      marca: repuesto.marca || '',
+      modeloCompatible: repuesto.modeloCompatible || '',
+      stock: repuesto.stock || 0,
+      precio: repuesto.precio || 0
+    })
+    setEditingRepuesto(repuesto)
+    setShowForm(true)
+  }
+
+  const handleDeleteRepuesto = async (repuesto) => {
+    const confirmar = window.confirm(`¿Eliminar el repuesto "${repuesto.nombre}"?`)
+    if (!confirmar) return
+    try {
+      const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Eliminar repuesto',
+        text: `¿Desea eliminar el repuesto "${repuesto.nombre}"?`,
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      })
+      if (!result.isConfirmed) return
+
+      await repuestosAPI.delete(repuesto.id)
+      Swal.fire({
+        icon: 'success',
+        title: 'Repuesto eliminado',
+        confirmButtonColor: '#2c3e50'
+      })
+      loadRepuestos()
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || error.message,
+        confirmButtonColor: '#2c3e50'
+      })
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await repuestosAPI.create(formData)
+      if (editingRepuesto) {
+        await repuestosAPI.update(editingRepuesto.id, formData)
+        Swal.fire({
+          icon: 'success',
+          title: 'Repuesto actualizado',
+          confirmButtonColor: '#2c3e50'
+        })
+      } else {
+        await repuestosAPI.create(formData)
+        Swal.fire({
+          icon: 'success',
+          title: 'Repuesto creado',
+          confirmButtonColor: '#2c3e50'
+        })
+      }
       setShowForm(false)
+      setEditingRepuesto(null)
+      setFormData(initialFormData)
       loadRepuestos()
-      alert('Repuesto creado exitosamente')
-      setFormData({ nombre: '', marca: '', modeloCompatible: '', stock: 0, precio: 0 })
     } catch (error) {
-      alert('Error al crear repuesto: ' + (error.response?.data?.message || error.message))
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || error.message,
+        confirmButtonColor: '#2c3e50'
+      })
     }
   }
 
@@ -68,14 +163,25 @@ const Repuestos = () => {
     <div className="repuestos-page">
       <div className="page-header">
         <h1>Gestión de Repuestos</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancelar' : 'Agregar Repuesto'}
+        <button
+          className="btn-primary"
+          onClick={() => {
+            if (showForm && !editingRepuesto) {
+              setShowForm(false)
+            } else {
+              setFormData(initialFormData)
+              setEditingRepuesto(null)
+              setShowForm(!showForm)
+            }
+          }}
+        >
+          {showForm ? 'Cerrar formulario' : 'Agregar Repuesto'}
         </button>
       </div>
 
       {showForm && (
         <div className="repuesto-form-container">
-          <h2>Agregar nuevo repuesto</h2>
+          <h2>{editingRepuesto ? 'Editar repuesto' : 'Agregar nuevo repuesto'}</h2>
           <form onSubmit={handleSubmit} className="repuesto-form">
             <div className="form-row">
               <div className="form-group">
@@ -130,7 +236,15 @@ const Repuestos = () => {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-primary">Guardar</button>
-              <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  setShowForm(false)
+                  setEditingRepuesto(null)
+                  setFormData(initialFormData)
+                }}
+              >
                 Cancelar
               </button>
             </div>
@@ -208,9 +322,22 @@ const Repuestos = () => {
                     </span>
                   </td>
                   <td>
-                    {repuesto.estado === 'AGOTADO' && (
-                      <button className="btn-link">Solicitar compra</button>
-                    )}
+                    <div className="table-actions">
+                      <button
+                        type="button"
+                        className="btn-link"
+                        onClick={() => handleEditRepuesto(repuesto)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-link danger"
+                        onClick={() => handleDeleteRepuesto(repuesto)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

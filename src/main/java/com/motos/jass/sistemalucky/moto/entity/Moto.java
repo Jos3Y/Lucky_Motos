@@ -1,8 +1,9 @@
 package com.motos.jass.sistemalucky.moto.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.motos.jass.sistemalucky.cliente.entity.Cliente;
 import com.motos.jass.sistemalucky.reserva.entity.Reserva;
-import com.motos.jass.sistemalucky.socio.entity.Socio;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,33 +19,41 @@ public class Moto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_moto")
-    private long id;
+    private Long id;
 
+    @Column(nullable = false, length = 20)
     private String placa;
 
+    @Column(nullable = false, length = 100)
     private String modelo;
 
+    @Column(nullable = false, length = 100)
     private String marca;
 
+    @Column(name = "anio")
+    private Integer anio;
+
+    @Column(name = "tipo_combustible", length = 50)
     private String tipoCombustible;
 
+    @Column(name = "nro_serie_motor", length = 100)
     private String nroSerieMotor;
 
+    @Column(name = "numero_chasis", length = 100)
     private String numeroChasis;
 
-    private String kilometrajeActual;
+    @Column(name = "kilometraje_actual")
+    private Integer kilometrajeActual;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    private String estado = "ACTIVA"; // valor por defecto al crear
+    private EstadoMoto estado = EstadoMoto.ACTIVO;
 
-
-
-    // Enum interno o externo
-    public enum EstadoReserva {
-        en_revisión,
-        en_reparación,
-        lista,
-        entregada
+    public enum EstadoMoto {
+        ACTIVO,
+        EN_REPARACION,
+        VENDIDA,
+        INACTIVO
     }
 
     @Column(name = "created_at")
@@ -53,11 +62,12 @@ public class Moto {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name="socio_id")
-    private Socio socio;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
 
     @OneToMany(mappedBy = "moto", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reserva> reserva = new ArrayList<>();
 
 

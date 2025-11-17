@@ -21,28 +21,34 @@ public class CitaController {
     private final CitaService citaService;
     
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     public ResponseEntity<CitaResponseDTO> crearCita(@RequestBody CitaRequestDTO request) {
+        System.out.println("📝 ====== PETICIÓN LLEGÓ AL CONTROLADOR ======");
+        System.out.println("📝 Autenticación actual: " + org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication());
+        System.out.println("📝 Autoridades: " + org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        System.out.println("📝 Creando cita con datos: " + request);
+        System.out.println("📝 Comprobante URL: " + request.getComprobantePagoUrl());
         CitaResponseDTO response = citaService.crearCita(request);
+        System.out.println("✅ Cita creada exitosamente con ID: " + response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     public ResponseEntity<List<CitaResponseDTO>> obtenerTodasLasCitas() {
         List<CitaResponseDTO> citas = citaService.obtenerTodasLasCitas();
         return ResponseEntity.ok(citas);
     }
     
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO', 'CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO')")
     public ResponseEntity<CitaResponseDTO> obtenerCitaPorId(@PathVariable Long id) {
         CitaResponseDTO cita = citaService.obtenerCitaPorId(id);
         return ResponseEntity.ok(cita);
     }
     
     @GetMapping("/cliente/{clienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     public ResponseEntity<List<CitaResponseDTO>> obtenerCitasPorCliente(@PathVariable Long clienteId) {
         List<CitaResponseDTO> citas = citaService.obtenerCitasPorCliente(clienteId);
         return ResponseEntity.ok(citas);
@@ -59,6 +65,20 @@ public class CitaController {
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO')")
     public ResponseEntity<List<CitaResponseDTO>> obtenerCitasPorEstado(@PathVariable String estado) {
         List<CitaResponseDTO> citas = citaService.obtenerCitasPorEstado(estado);
+        return ResponseEntity.ok(citas);
+    }
+    
+    @GetMapping("/hoy")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECNICO', 'RECEPCIONISTA')")
+    public ResponseEntity<List<CitaResponseDTO>> obtenerCitasDeHoy() {
+        List<CitaResponseDTO> citas = citaService.obtenerCitasDeHoy();
+        return ResponseEntity.ok(citas);
+    }
+    
+    @GetMapping("/tecnico/{tecnicoId}/hoy")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECNICO')")
+    public ResponseEntity<List<CitaResponseDTO>> obtenerCitasDeHoyPorTecnico(@PathVariable Long tecnicoId) {
+        List<CitaResponseDTO> citas = citaService.obtenerCitasDeHoyPorTecnico(tecnicoId);
         return ResponseEntity.ok(citas);
     }
     
@@ -81,7 +101,7 @@ public class CitaController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     public ResponseEntity<Void> eliminarCita(@PathVariable Long id) {
         citaService.eliminarCita(id);
         return ResponseEntity.noContent().build();

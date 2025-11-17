@@ -37,7 +37,9 @@ public class RepuestoServiceImpl implements RepuestoService {
     
     @Override
     public List<RepuestoResponseDTO> obtenerTodosLosRepuestos() {
-        return repuestoRepository.findAll().stream()
+        List<Repuesto> todos = repuestoRepository.findAll();
+        System.out.println("DEBUG - Total de repuestos en BD: " + todos.size());
+        return todos.stream()
                 .map(repuestoMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -45,17 +47,24 @@ public class RepuestoServiceImpl implements RepuestoService {
     @Override
     public List<RepuestoResponseDTO> filtrarRepuestos(RepuestoFilterDTO filter) {
         List<Repuesto> repuestos;
-        
-        if (filter.getMarca() != null && filter.getModelo() != null) {
+
+        boolean hasMarca = filter.getMarca() != null && !filter.getMarca().isEmpty();
+        boolean hasModelo = filter.getModelo() != null && !filter.getModelo().isEmpty();
+        boolean hasRepuesto = filter.getRepuesto() != null && !filter.getRepuesto().isEmpty();
+
+        if (hasMarca && hasModelo) {
             repuestos = repuestoRepository.findByMarcaAndModelo(filter.getMarca(), filter.getModelo());
-        } else if (filter.getMarca() != null) {
+        } else if (hasMarca) {
             repuestos = repuestoRepository.findByMarca(filter.getMarca());
-        } else if (filter.getModelo() != null) {
+        } else if (hasModelo) {
             repuestos = repuestoRepository.findByModeloCompatible(filter.getModelo());
-        } else {
+        } else if (hasRepuesto) {
+            repuestos = repuestoRepository.findByNombreContainingIgnoreCase(filter.getRepuesto());
+        }
+        else {
             repuestos = repuestoRepository.findAll();
         }
-        
+
         return repuestos.stream()
                 .map(repuestoMapper::toResponseDTO)
                 .collect(Collectors.toList());

@@ -40,6 +40,18 @@ const Layout = ({ children }) => {
       roles: ['ADMIN', 'RECEPCIONISTA', 'TECNICO']
     },
     {
+      path: '/especialidades',
+      label: 'Especialidades',
+      icon: '🛠️',
+      roles: ['ADMIN', 'RECEPCIONISTA']
+    },
+    {
+      path: '/usuarios',
+      label: 'Usuarios',
+      icon: '👤',
+      roles: ['ADMIN']
+    },
+    {
       path: '/reportes',
       label: 'Reportes',
       icon: '📊',

@@ -23,7 +23,6 @@ public class ReservaServiceImpl extends BaseServiceImpl  <Reserva, Long>
         implements ReservaService {
 
 
-    private ReservaRepository reservaRepository;
     private final ReservaMapper reservaMapper;
     private final SocioRepository socioRepository;
     private final MotoRepository motoRepository;
@@ -32,12 +31,11 @@ public class ReservaServiceImpl extends BaseServiceImpl  <Reserva, Long>
 
 
     @Autowired
-    public ReservaServiceImpl(ReservaRepository reservaRepository,
+    public ReservaServiceImpl(ReservaRepository repository,
                               ReservaMapper reservaMapper,
                               SocioRepository socioRepository,
                               MotoRepository motoRepository, JwtUtil jwtUtil) {
-        super(reservaRepository);
-        this.reservaRepository = reservaRepository;
+        super(repository);
         this.reservaMapper = reservaMapper;
         this.socioRepository = socioRepository;
         this.motoRepository = motoRepository;
@@ -80,10 +78,10 @@ public class ReservaServiceImpl extends BaseServiceImpl  <Reserva, Long>
         }
 
         // 7️⃣ Guardar
-        reservaRepository.save(reserva);
+        repository.save(reserva);
 
         // 8️⃣ Recargar para que tenga las relaciones actualizadas
-        Reserva reservaGuardada = reservaRepository.findById(reserva.getId())
+        Reserva reservaGuardada = repository.findById(reserva.getId())
                 .orElseThrow(() -> new RuntimeException("No se pudo recuperar la reserva guardada"));
 
         // 9️⃣ Devolver DTO completo

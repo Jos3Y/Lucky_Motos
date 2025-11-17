@@ -1,132 +1,133 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
+import { reportesAPI } from '../services/api'
 import './Reportes.css'
 
+const periodos = [
+  { label: 'Últimos 6 meses', value: 'ULTIMOS_6_MESES' },
+  { label: 'Últimos 3 meses', value: 'ULTIMOS_3_MESES' },
+  { label: 'Último mes', value: 'ULTIMO_MES' }
+]
+
 const Reportes = () => {
-  const [filters, setFilters] = useState({
-    periodo: 'ULTIMOS_6_MESES',
-    tecnico: 'TODOS',
-    marca: 'TODAS'
+  const [periodo, setPeriodo] = useState('ULTIMOS_6_MESES')
+  const [data, setData] = useState({
+    mejoresTecnicos: [],
+    diasConMasCitas: [],
+    repuestosMasUsados: []
   })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchDatos()
+  }, [periodo])
+
+  const fetchDatos = async () => {
+    try {
+      setLoading(true)
+      const { data } = await reportesAPI.getResumen(periodo)
+      setData(data)
+    } catch (error) {
+      Swal.fire('Error', 'No se pudieron cargar los reportes', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const descargarExcel = async () => {
+    try {
+      const response = await reportesAPI.downloadExcel(periodo)
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'reportes.xlsx')
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch (error) {
+      Swal.fire('Error', 'No se pudo descargar el Excel', 'error')
+    }
+  }
+
+  const renderTabla = (headers, rows, emptyMessage) => (
+    <table className="reporte-table">
+      <thead>
+        <tr>
+          {headers.map((h) => <th key={h}>{h}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.length === 0 ? (
+          <tr>
+            <td colSpan={headers.length} className="no-data">{emptyMessage}</td>
+          </tr>
+        ) : rows}
+      </tbody>
+    </table>
+  )
 
   return (
     <div className="reportes-page">
-      <h1>Reportes</h1>
-
-      <div className="reportes-grid">
-        {/* Mejores trabajadores */}
-        <div className="reporte-card">
-          <h2>Mejores trabajadores</h2>
-          <div className="filters">
-            <select
-              value={filters.periodo}
-              onChange={(e) => setFilters({ ...filters, periodo: e.target.value })}
-            >
-              <option value="ULTIMOS_6_MESES">Últimos 6 meses</option>
-              <option value="ULTIMOS_3_MESES">Últimos 3 meses</option>
-              <option value="ULTIMO_MES">Último mes</option>
-            </select>
-            <select
-              value={filters.tecnico}
-              onChange={(e) => setFilters({ ...filters, tecnico: e.target.value })}
-            >
-              <option value="TODOS">Todos</option>
-            </select>
-            <button className="btn-primary">Buscar</button>
-          </div>
-          <div className="reporte-content">
-            <table className="reporte-table">
-              <thead>
-                <tr>
-                  <th>Técnico</th>
-                  <th>Citas atendidas</th>
-                  <th>Nivel de satisfacción</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan="3" className="no-data">No hay datos disponibles</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      <div className="page-header">
+        <div>
+          <h1>Reportes</h1>
+          <p>Visualiza el desempeño del taller</p>
         </div>
-
-        {/* Días más trabajados */}
-        <div className="reporte-card">
-          <h2>Días más trabajados</h2>
-          <div className="filters">
-            <select
-              value={filters.periodo}
-              onChange={(e) => setFilters({ ...filters, periodo: e.target.value })}
-            >
-              <option value="ULTIMOS_6_MESES">Últimos 6 meses</option>
-              <option value="ULTIMOS_3_MESES">Últimos 3 meses</option>
-              <option value="ULTIMO_MES">Último mes</option>
-            </select>
-            <select
-              value={filters.tecnico}
-              onChange={(e) => setFilters({ ...filters, tecnico: e.target.value })}
-            >
-              <option value="TODOS">Todas</option>
-            </select>
-            <button className="btn-primary">Buscar</button>
-          </div>
-          <div className="reporte-content">
-            <table className="reporte-table">
-              <thead>
-                <tr>
-                  <th>Día</th>
-                  <th>Número de citas</th>
-                  <th>Porcentaje</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan="3" className="no-data">No hay datos disponibles</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Repuestos más usados */}
-        <div className="reporte-card">
-          <h2>Repuestos más usados</h2>
-          <div className="filters">
-            <select
-              value={filters.periodo}
-              onChange={(e) => setFilters({ ...filters, periodo: e.target.value })}
-            >
-              <option value="ULTIMOS_6_MESES">Últimos 6 meses</option>
-              <option value="ULTIMOS_3_MESES">Últimos 3 meses</option>
-              <option value="ULTIMO_MES">Último mes</option>
-            </select>
-            <select
-              value={filters.marca}
-              onChange={(e) => setFilters({ ...filters, marca: e.target.value })}
-            >
-              <option value="TODAS">Todas</option>
-            </select>
-            <button className="btn-primary">Buscar</button>
-          </div>
-          <div className="reporte-content">
-            <table className="reporte-table">
-              <thead>
-                <tr>
-                  <th>Repuesto</th>
-                  <th>Cantidad usada</th>
-                  <th>Porcentaje</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan="3" className="no-data">No hay datos disponibles</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div className="header-actions">
+          <select value={periodo} onChange={(e) => setPeriodo(e.target.value)}>
+            {periodos.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+          </select>
+          <button className="btn-primary" onClick={descargarExcel}>Descargar Excel</button>
         </div>
       </div>
+
+      {loading ? (
+        <div className="loading">Cargando reportes...</div>
+      ) : (
+        <div className="reportes-grid">
+          <div className="reporte-card">
+            <h2>Mejores técnicos</h2>
+            {renderTabla(
+              ['Técnico', 'Total de citas'],
+              data.mejoresTecnicos.map(item => (
+                <tr key={item.tecnicoId}>
+                  <td>{item.nombreCompleto}</td>
+                  <td>{item.totalCitas}</td>
+                </tr>
+              )),
+              'No hay información disponible'
+            )}
+          </div>
+
+          <div className="reporte-card">
+            <h2>Días con más citas</h2>
+            {renderTabla(
+              ['Fecha', 'Total de citas'],
+              data.diasConMasCitas.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.fecha}</td>
+                  <td>{item.totalCitas}</td>
+                </tr>
+              )),
+              'No hay información disponible'
+            )}
+          </div>
+
+          <div className="reporte-card">
+            <h2>Repuestos más usados</h2>
+            {renderTabla(
+              ['Repuesto', 'Cantidad'],
+              data.repuestosMasUsados.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.nombreRepuesto}</td>
+                  <td>{item.cantidad}</td>
+                </tr>
+              )),
+              'No hay información disponible'
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

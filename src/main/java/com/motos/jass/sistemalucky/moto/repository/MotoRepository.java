@@ -13,8 +13,14 @@ public interface MotoRepository extends BaseRepository <Moto, Long>{
 
     Optional<Moto> findByplaca(String placa);
 
-    @Query("SELECT m FROM Moto m WHERE m.estado = 'ACTIVA'")
+    @Query("SELECT m FROM Moto m WHERE m.estado = 'ACTIVO'")
     List<Moto> findAllActivas();
 
+    List<Moto> findByClienteId(Long clienteId);
+
+    @Query("SELECT DISTINCT m.modelo FROM Moto m WHERE m.estado = 'ACTIVO' ORDER BY m.modelo")
+    List<String> findDistinctModelos();
+
+    Optional<Moto> findFirstByModeloAndEstado(String modelo, Moto.EstadoMoto estado);
 
 }

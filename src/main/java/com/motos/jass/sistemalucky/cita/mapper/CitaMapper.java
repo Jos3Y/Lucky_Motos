@@ -26,15 +26,16 @@ public interface CitaMapper {
     
     CitaResponseDTO toResponseDTO(Cita cita);
     
-    default CitaResponseDTO.ClienteDTO mapCliente(com.motos.jass.sistemalucky.socio.entity.Socio socio) {
-        if (socio == null) return null;
+    default CitaResponseDTO.ClienteDTO mapCliente(com.motos.jass.sistemalucky.cliente.entity.Cliente cliente) {
+        if (cliente == null) return null;
         CitaResponseDTO.ClienteDTO dto = new CitaResponseDTO.ClienteDTO();
-        dto.setId(socio.getId());
-        dto.setNombre(socio.getNombre());
-        dto.setApellidos(socio.getApellidos());
-        dto.setDni(socio.getDni());
-        dto.setTelefono(socio.getTelefono());
-        dto.setCorreo(socio.getCorreo());
+        dto.setId(cliente.getId());
+        dto.setNombre(cliente.getNombre());
+        dto.setApellidos(cliente.getApellidos());
+        dto.setDni(cliente.getDni());
+        dto.setTelefono(cliente.getTelefono());
+        dto.setCorreo(cliente.getCorreo());
+        dto.setDireccion(cliente.getDireccion());
         return dto;
     }
     

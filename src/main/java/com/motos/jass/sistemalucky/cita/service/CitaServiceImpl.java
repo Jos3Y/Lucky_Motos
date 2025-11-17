@@ -5,12 +5,12 @@ import com.motos.jass.sistemalucky.cita.entity.Cita;
 import com.motos.jass.sistemalucky.cita.entity.CitaRepuesto;
 import com.motos.jass.sistemalucky.cita.mapper.CitaMapper;
 import com.motos.jass.sistemalucky.cita.repository.CitaRepository;
+import com.motos.jass.sistemalucky.cliente.entity.Cliente;
+import com.motos.jass.sistemalucky.cliente.repository.ClienteRepository;
 import com.motos.jass.sistemalucky.moto.entity.Moto;
 import com.motos.jass.sistemalucky.moto.repository.MotoRepository;
 import com.motos.jass.sistemalucky.repuesto.entity.Repuesto;
 import com.motos.jass.sistemalucky.repuesto.repository.RepuestoRepository;
-import com.motos.jass.sistemalucky.socio.entity.Socio;
-import com.motos.jass.sistemalucky.socio.repository.SocioRepository;
 import com.motos.jass.sistemalucky.tecnico.entity.Tecnico;
 import com.motos.jass.sistemalucky.tecnico.repository.TecnicoRepository;
 import com.motos.jass.sistemalucky.tiposervicio.entity.TipoServicio;
@@ -28,7 +28,7 @@ public class CitaServiceImpl implements CitaService {
     
     private final CitaRepository citaRepository;
     private final CitaMapper citaMapper;
-    private final SocioRepository socioRepository;
+    private final ClienteRepository clienteRepository;
     private final MotoRepository motoRepository;
     private final TecnicoRepository tecnicoRepository;
     private final TipoServicioRepository tipoServicioRepository;
@@ -38,7 +38,7 @@ public class CitaServiceImpl implements CitaService {
     @Transactional
     public CitaResponseDTO crearCita(CitaRequestDTO request) {
         // Validar y obtener entidades
-        Socio cliente = socioRepository.findById(request.getClienteId())
+        Cliente cliente = clienteRepository.findById(request.getClienteId())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         
         Moto moto = motoRepository.findById(request.getMotoId())
@@ -62,6 +62,16 @@ public class CitaServiceImpl implements CitaService {
         cita.setMoto(moto);
         cita.setTecnico(tecnico);
         cita.setTipoServicio(tipoServicio);
+        
+        // Asegurar que el estado tenga un valor por defecto si es null
+        if (cita.getEstado() == null) {
+            cita.setEstado(Cita.EstadoCita.PENDIENTE);
+        }
+        
+        // Asegurar que el comprobante se guarde si existe
+        if (request.getComprobantePagoUrl() != null) {
+            cita.setComprobantePagoUrl(request.getComprobantePagoUrl());
+        }
         
         // Agregar repuestos si existen
         if (request.getRepuestos() != null && !request.getRepuestos().isEmpty()) {
@@ -116,6 +126,23 @@ public class CitaServiceImpl implements CitaService {
     public List<CitaResponseDTO> obtenerCitasPorEstado(String estado) {
         Cita.EstadoCita estadoEnum = Cita.EstadoCita.valueOf(estado.toUpperCase());
         return citaRepository.findByEstado(estadoEnum).stream()
+                .map(citaMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<CitaResponseDTO> obtenerCitasDeHoy() {
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        return citaRepository.findByFechaCita(hoy).stream()
+                .map(citaMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<CitaResponseDTO> obtenerCitasDeHoyPorTecnico(Long tecnicoId) {
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        return citaRepository.findByTecnicoId(tecnicoId).stream()
+                .filter(cita -> cita.getFechaCita().equals(hoy))
                 .map(citaMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }

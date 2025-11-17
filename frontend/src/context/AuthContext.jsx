@@ -22,10 +22,14 @@ export const AuthProvider = ({ children }) => {
       // Decodificar token para obtener usuario (simple, sin verificar firma)
       try {
         const payload = JSON.parse(atob(token.split('.')[1]))
+        // Normalizar roles: quitar prefijo ROLE_ si existe
+        const normalizedRoles = (payload.roles || []).map(role => {
+          return role.toUpperCase().replace(/^ROLE_/, '')
+        })
         setUser({
           id: payload.idSocio || payload.sub,
           correo: payload.sub,
-          roles: payload.roles || []
+          roles: normalizedRoles
         })
       } catch (error) {
         console.error('Error decodificando token:', error)
@@ -53,8 +57,13 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
+      // Normalizar roles: quitar prefijo ROLE_ si existe
+      const normalizedRoles = (roles || []).map(role => {
+        return role.toUpperCase().replace(/^ROLE_/, '')
+      })
+
       setToken(token)
-      setUser({ id: idSocio, correo: email, roles })
+      setUser({ id: idSocio, correo: email, roles: normalizedRoles })
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       return { success: true }
@@ -106,7 +115,13 @@ export const AuthProvider = ({ children }) => {
 
   const hasRole = (role) => {
     if (!user || !user.roles) return false
-    return user.roles.some(r => r.toUpperCase() === role.toUpperCase())
+    // Normalizar roles: quitar prefijo ROLE_ si existe y comparar
+    const normalizedUserRoles = user.roles.map(r => {
+      const normalized = r.toUpperCase().replace(/^ROLE_/, '')
+      return normalized
+    })
+    const normalizedRole = role.toUpperCase().replace(/^ROLE_/, '')
+    return normalizedUserRoles.includes(normalizedRole)
   }
 
   const hasAnyRole = (roles) => {

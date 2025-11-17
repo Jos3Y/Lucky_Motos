@@ -13,6 +13,8 @@ public interface CitaService {
     List<CitaResponseDTO> obtenerCitasPorCliente(Long clienteId);
     List<CitaResponseDTO> obtenerCitasPorTecnico(Long tecnicoId);
     List<CitaResponseDTO> obtenerCitasPorEstado(String estado);
+    List<CitaResponseDTO> obtenerCitasDeHoy();
+    List<CitaResponseDTO> obtenerCitasDeHoyPorTecnico(Long tecnicoId);
     CitaResponseDTO actualizarEstado(Long id, CitaUpdateEstadoDTO request);
     CitaResponseDTO actualizarCita(Long id, CitaRequestDTO request);
     void eliminarCita(Long id);

@@ -13,10 +13,11 @@ public class MotoResponseDTO
     private String placa;
     private String modelo;
     private String marca;
+    private Integer anio;
     private String tipoCombustible;
     private String nroSerieMotor;
     private String numeroChasis;
-    private String kilometrajeActual;
+    private Integer kilometrajeActual;
 
     private String estado;
 
@@ -24,7 +25,7 @@ public class MotoResponseDTO
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Datos del socio (solo lo esencial)
-    private Long socioId;
-    private String nombreSocio;
+    // Datos del cliente (solo lo esencial)
+    private Long clienteId;
+    private String nombreCliente;
 }

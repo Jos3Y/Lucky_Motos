@@ -1,7 +1,9 @@
 package com.motos.jass.sistemalucky.tecnico.service;
 
+import com.motos.jass.sistemalucky.socio.entity.Socio;
 import com.motos.jass.sistemalucky.socio.repository.SocioRepository;
 import com.motos.jass.sistemalucky.tecnico.dto.DisponibilidadRequestDTO;
+import com.motos.jass.sistemalucky.tecnico.dto.TecnicoRequestDTO;
 import com.motos.jass.sistemalucky.tecnico.dto.TecnicoResponseDTO;
 import com.motos.jass.sistemalucky.tecnico.entity.DisponibilidadTecnico;
 import com.motos.jass.sistemalucky.tecnico.entity.Tecnico;
@@ -14,9 +16,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@SuppressWarnings({"DataFlowIssue", "NullableProblems"})
 @RequiredArgsConstructor
 public class TecnicoServiceImpl implements TecnicoService {
     
@@ -34,15 +39,23 @@ public class TecnicoServiceImpl implements TecnicoService {
     
     @Override
     public TecnicoResponseDTO obtenerTecnicoPorId(Long id) {
-        Tecnico tecnico = tecnicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Técnico no encontrado"));
+        Objects.requireNonNull(id, "El id del técnico es obligatorio");
+        long tecnicoIdValue = Objects.requireNonNull(id, "El id del técnico es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findById(tecnicoIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
         return tecnicoMapper.toResponseDTO(tecnico);
     }
     
     @Override
     public TecnicoResponseDTO obtenerTecnicoPorSocioId(Long socioId) {
-        Tecnico tecnico = tecnicoRepository.findBySocioId(socioId)
-                .orElseThrow(() -> new RuntimeException("Técnico no encontrado"));
+        Objects.requireNonNull(socioId, "El socio es obligatorio");
+        long socioIdValue = Objects.requireNonNull(socioId, "El socio es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findBySocioId(socioIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
         return tecnicoMapper.toResponseDTO(tecnico);
     }
     
@@ -56,8 +69,12 @@ public class TecnicoServiceImpl implements TecnicoService {
     @Override
     @Transactional
     public void actualizarDisponibilidad(Long tecnicoId, DisponibilidadRequestDTO request) {
-        Tecnico tecnico = tecnicoRepository.findById(tecnicoId)
-                .orElseThrow(() -> new RuntimeException("Técnico no encontrado"));
+        Objects.requireNonNull(tecnicoId, "El id del técnico es obligatorio");
+        long tecnicoIdValue = Objects.requireNonNull(tecnicoId, "El id del técnico es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findById(tecnicoIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
         
         // Eliminar disponibilidades existentes
         disponibilidadRepository.findByTecnicoId(tecnicoId).forEach(disponibilidadRepository::delete);
@@ -78,6 +95,115 @@ public class TecnicoServiceImpl implements TecnicoService {
         }
         
         tecnicoRepository.save(tecnico);
+    }
+
+    @Override
+    @Transactional
+    @SuppressWarnings({"ConstantConditions", "DataFlowIssue"})
+    public TecnicoResponseDTO crearTecnico(TecnicoRequestDTO request) {
+        long socioId = Objects.requireNonNull(request.getSocioId(), "El socio es obligatorio");
+        if (tecnicoRepository.existsBySocioId(socioId)) {
+            throw new RuntimeException("El socio ya está asignado a un técnico");
+        }
+        Socio socio = Objects.requireNonNull(
+                socioRepository.findById(socioId)
+                        .orElseThrow(() -> new RuntimeException("Socio no encontrado"))
+        );
+        
+        Tecnico tecnico = Tecnico.builder()
+                .socio(socio)
+                .especialidad(request.getEspecialidad())
+                .estado(parseEstado(request.getEstado()))
+                .build();
+        
+        aplicarHorarioDefault(tecnico);
+        return Optional.ofNullable(tecnicoRepository.save(tecnico))
+                .map(tecnicoMapper::toResponseDTO)
+                .orElseThrow(() -> new RuntimeException("No se pudo registrar el técnico"));
+    }
+
+    @Override
+    @Transactional
+    @SuppressWarnings({"ConstantConditions", "DataFlowIssue"})
+    public TecnicoResponseDTO actualizarTecnico(Long id, TecnicoRequestDTO request) {
+        long tecnicoIdValue = Objects.requireNonNull(id, "El id del técnico es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findById(tecnicoIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
+        if (request.getEspecialidad() != null) {
+            tecnico.setEspecialidad(request.getEspecialidad());
+        }
+        if (request.getEstado() != null) {
+            tecnico.setEstado(parseEstado(request.getEstado()));
+        }
+        return Optional.ofNullable(tecnicoRepository.save(tecnico))
+                .map(tecnicoMapper::toResponseDTO)
+                .orElseThrow(() -> new RuntimeException("No se pudo actualizar el técnico"));
+    }
+
+    @Override
+    @Transactional
+    public void cambiarEstado(Long id, String estado) {
+        long tecnicoIdValue = Objects.requireNonNull(id, "El id del técnico es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findById(tecnicoIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
+        tecnico.setEstado(parseEstado(estado));
+        tecnicoRepository.save(tecnico);
+    }
+
+    @Override
+    @Transactional
+    public void eliminarTecnico(Long id) {
+        long tecnicoIdValue = Objects.requireNonNull(id, "El id del técnico es obligatorio");
+        Tecnico tecnico = Objects.requireNonNull(
+                tecnicoRepository.findById(tecnicoIdValue)
+                        .orElseThrow(() -> new RuntimeException("Técnico no encontrado"))
+        );
+        tecnico.setEstado(Tecnico.EstadoTecnico.INACTIVO);
+        tecnico.getDisponibilidades().clear();
+        tecnicoRepository.save(tecnico);
+    }
+
+    @Override
+    @Transactional
+    public void resetearHorariosDefault() {
+        List<Tecnico> lista = tecnicoRepository.findAll();
+        for (Tecnico tecnico : lista) {
+            if (tecnico == null) continue;
+            aplicarHorarioDefault(tecnico);
+            tecnicoRepository.save(tecnico);
+        }
+    }
+
+    private void aplicarHorarioDefault(Tecnico tecnico) {
+        tecnico.getDisponibilidades().clear();
+        for (DisponibilidadTecnico.DiaSemana dia : DisponibilidadTecnico.DiaSemana.values()) {
+            if (dia == DisponibilidadTecnico.DiaSemana.DOMINGO) {
+                continue;
+            }
+            DisponibilidadTecnico disponibilidad = DisponibilidadTecnico.builder()
+                    .tecnico(tecnico)
+                    .diaSemana(dia)
+                    .horaInicio(LocalTime.of(8, 0))
+                    .horaFin(LocalTime.of(20, 0))
+                    .disponible(true)
+                    .build();
+            tecnico.getDisponibilidades().add(disponibilidad);
+        }
+    }
+
+    private Tecnico.EstadoTecnico parseEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            return Tecnico.EstadoTecnico.DISPONIBLE;
+        }
+        try {
+            return Tecnico.EstadoTecnico.valueOf(estado.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Estado de técnico inválido");
+        }
     }
 }
 

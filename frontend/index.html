@@ -1,14 +1,85 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lucky Motos - Sistema de Gestión</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
 
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lucky Motos - Sistema de Gestión</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    #root {
+      min-height: 100vh;
+    }
+
+    .loading {
+      padding: 20px;
+      color: #666;
+    }
+
+    .error-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      color: #ffb4b4;
+      font-family: monospace;
+      padding: 30px;
+      overflow: auto;
+      z-index: 9999;
+      white-space: pre-wrap;
+    }
+
+    .error-overlay h2 {
+      margin-top: 0;
+      color: #fff;
+    }
+
+    .error-overlay pre {
+      color: #ffd6d6;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div class="loading">Cargando Lucky Motos...</div>
+  </div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script>
+    const showGlobalError = (title, message, stack) => {
+      let overlay = document.getElementById('global-error-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'global-error-overlay';
+        overlay.className = 'error-overlay';
+        document.body.appendChild(overlay);
+      }
+      overlay.innerHTML = `<h2>${title}</h2><p>${message || 'Sin mensaje'}</p><pre>${stack || 'Sin stack'}</pre>`;
+    };
+
+    window.addEventListener('error', (e) => {
+      console.error('Error global:', e.error || e.message);
+      showGlobalError(
+        'Error al cargar la aplicación',
+        e.error?.message || e.message,
+        e.error?.stack || e.stack
+      );
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('Unhandled rejection:', e.reason);
+      showGlobalError(
+        'Promise no manejada',
+        e.reason?.message || e.reason,
+        e.reason?.stack
+      );
+    });
+  </script>
+</body>
+
+</html>

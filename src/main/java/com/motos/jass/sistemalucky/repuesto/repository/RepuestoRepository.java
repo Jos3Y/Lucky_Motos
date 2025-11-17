@@ -16,6 +16,8 @@ public interface RepuestoRepository extends JpaRepository<Repuesto, Long> {
     
     @Query("SELECT r FROM Repuesto r WHERE r.marca = :marca AND r.modeloCompatible = :modelo")
     List<Repuesto> findByMarcaAndModelo(@Param("marca") String marca, @Param("modelo") String modelo);
+
+    List<Repuesto> findByNombreContainingIgnoreCase(String nombre);
     
     @Query("SELECT r FROM Repuesto r WHERE r.stock < 5")
     List<Repuesto> findBajoStock();

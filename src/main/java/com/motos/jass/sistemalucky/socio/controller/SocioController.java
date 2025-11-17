@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/socio")
-@PreAuthorize("hasAuthority('SOCIO')")
 public class SocioController {
 
     private final SocioService socioService;
@@ -29,6 +28,7 @@ public class SocioController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SocioResponseDTO> guardarSocio(@RequestBody SocioRequestDTO requestDTO) {
         SocioResponseDTO responseEntity = socioServiceImpl.savePartner(requestDTO);
         return ResponseEntity.status(201).body(responseEntity);
@@ -36,6 +36,7 @@ public class SocioController {
 
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<SocioResponseDTO>> listar() {
         List<SocioResponseDTO> socios = socioServiceImpl.listarSociosDTO();
         return ResponseEntity.ok(socios);
@@ -43,10 +44,17 @@ public class SocioController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SocioResponseDTO> actualizarSocio(@PathVariable Long id, @RequestBody SocioRequestDTO request) {
         SocioResponseDTO socioActualizado = socioServiceImpl.actualizarSocio(id, request);
         return ResponseEntity.ok(socioActualizado);
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        socioService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

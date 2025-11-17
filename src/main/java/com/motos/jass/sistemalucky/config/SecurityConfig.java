@@ -43,12 +43,16 @@
                             .requestMatchers("/auth/**").permitAll()
 
                             // Rutas de API con roles específicos
-                            .requestMatchers("/api/citas/**").hasAnyRole("ADMIN", "RECEPCIONISTA", "TECNICO", "CLIENTE")
-                            .requestMatchers("/api/repuestos/**").hasAnyRole("ADMIN", "RECEPCIONISTA", "TECNICO")
-                            .requestMatchers("/api/tecnicos/**").hasAnyRole("ADMIN", "RECEPCIONISTA", "TECNICO")
+                            .requestMatchers("/api/citas/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/clientes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/repuestos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/tecnicos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/tipos-servicio/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
+                            .requestMatchers("/api/comprobantes/view/**").permitAll()
+                            .requestMatchers("/api/comprobantes/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_TECNICO")
                             
                             // Rutas legacy (mantener compatibilidad)
-                            .requestMatchers("/socio/**", "/rol/**", "/rol-socio/**", "/moto/**", "/reserva/**").hasAnyRole("SOCIO", "ADMIN", "CLIENTE")
+                            .requestMatchers("/socio/**", "/rol/**", "/rol-socio/**", "/motos/**", "/reserva/**").hasAnyRole("SOCIO", "ADMIN", "CLIENTE", "RECEPCIONISTA", "TECNICO")
 
                             // Rutas exclusivas de ADMIN
                             .requestMatchers("/admin/**").hasRole("ADMIN")

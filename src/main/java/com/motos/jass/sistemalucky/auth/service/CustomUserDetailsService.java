@@ -26,7 +26,14 @@ public class CustomUserDetailsService implements UserDetailsService {
                     String estado = rolSocio.getEstado() != null ? rolSocio.getEstado() : "";
                     return "ACTIVO".equalsIgnoreCase(estado) || "Activo".equalsIgnoreCase(estado);
                 })
-                .map(rolSocio -> rolSocio.getRol().getDescripcion()) // Ej: "SOCIO", "ADMIN"
+                .map(rolSocio -> {
+                    // Normalizar roles: remover prefijo ROLE_ si existe
+                    String descripcion = rolSocio.getRol().getDescripcion();
+                    if (descripcion != null && descripcion.startsWith("ROLE_")) {
+                        return descripcion.substring(5); // Remover "ROLE_"
+                    }
+                    return descripcion != null ? descripcion : "";
+                })
                 .toArray(String[]::new);
 
         return User.builder()

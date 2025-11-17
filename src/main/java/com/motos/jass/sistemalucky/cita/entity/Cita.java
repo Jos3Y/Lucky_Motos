@@ -1,8 +1,8 @@
 package com.motos.jass.sistemalucky.cita.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.motos.jass.sistemalucky.cliente.entity.Cliente;
 import com.motos.jass.sistemalucky.moto.entity.Moto;
-import com.motos.jass.sistemalucky.socio.entity.Socio;
 import com.motos.jass.sistemalucky.tecnico.entity.Tecnico;
 import com.motos.jass.sistemalucky.tiposervicio.entity.TipoServicio;
 import jakarta.persistence.*;
@@ -32,8 +32,8 @@ public class Cita {
     private String codigoCita;
     
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "socio_id", nullable = false)
-    private Socio cliente;
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "moto_id", nullable = false)

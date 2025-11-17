@@ -17,13 +17,11 @@ public class RolSocioController {
 
     private final RolSocioServiceImpl rolSocioServiceImpl;
 
-    @PreAuthorize("hasRole('SOCIO')")
     @PostMapping("/asignar")
     public ResponseEntity<RolSocioResponseDTO> asignarRol(@RequestBody RolSocioRequestDTO request) {
         RolSocioResponseDTO response = rolSocioServiceImpl.asignarRol(request);
         return ResponseEntity.ok(response);
     }
-    @PreAuthorize("hasRole('SOCIO')")
     @PostMapping("/quitar")
     public ResponseEntity<RolSocioResponseDTO> quitarRol(@RequestBody RolSocioRequestDTO request) {
         RolSocioResponseDTO response = rolSocioServiceImpl.quitarRol(request);

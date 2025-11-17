@@ -17,24 +17,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public  class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements SocioService {
+public class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements SocioService {
 
     private final PasswordEncoder passwordEncoder;
     private final SocioMapper socioMapper;
     private final RolSocioService rolSocioService;
-    private final SocioRepository socioRepository;
     private final RolRepository rolRepository;
     private final RolSocioRepository rolSocioRepository;
 
-
-    public SocioServiceImpl(SocioRepository repository, PasswordEncoder passwordEncoder, SocioMapper socioMapper, RolSocioService rolSocioService, SocioRepository socioRepository, RolRepository rolRepository, RolSocioRepository rolSocioRepository) {
+    public SocioServiceImpl(SocioRepository repository, PasswordEncoder passwordEncoder, SocioMapper socioMapper,
+            RolSocioService rolSocioService, RolRepository rolRepository,
+            RolSocioRepository rolSocioRepository) {
 
         super(repository);
         this.passwordEncoder = passwordEncoder;
         this.socioMapper = socioMapper;
 
         this.rolSocioService = rolSocioService;
-        this.socioRepository = socioRepository;
         this.rolRepository = rolRepository;
         this.rolSocioRepository = rolSocioRepository;
     }
@@ -56,7 +55,7 @@ public  class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements S
 
     // lista solo la información del DTO
     public List<SocioResponseDTO> listarSociosDTO() {
-        return socioRepository.findAll().stream()
+        return repository.findAll().stream()
                 .map(socio -> {
                     SocioResponseDTO dto = new SocioResponseDTO();
                     dto.setIdSocio(socio.getId());
@@ -72,15 +71,16 @@ public  class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements S
                 })
                 .collect(Collectors.toList());
     }
+
     @Transactional
     public SocioResponseDTO actualizarSocio(Long id, SocioRequestDTO request) {
         System.out.println("Entrando a actualizar socio ID: " + id);
 
         // 1 Buscar el socio existente
-        Socio socioExistente = socioRepository.findById(id)
+        Socio socioExistente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Socio no encontrado con id: " + id));
 
-        // 2 Actualizar manualmente los campos editables
+        // 2 Actualizar manually los campos editables
         socioExistente.setNombre(request.getNombre());
         socioExistente.setApellidos(request.getApellidos());
         socioExistente.setDni(request.getDni());
@@ -89,21 +89,16 @@ public  class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements S
         socioExistente.setGenero(request.getGenero());
         socioExistente.setFechaNacimiento(request.getFechaNacimiento());
         socioExistente.setEstadoCivil(request.getEstadoCivil());
-        socioExistente.setContrasena(request.getContrasena());
+        // Hashear la contraseña si viene en la petición
+        if (request.getContrasena() != null && !request.getContrasena().isBlank()) {
+            socioExistente.setContrasena(passwordEncoder.encode(request.getContrasena()));
+        }
 
         // 3 Guardar los cambios
-        socioRepository.save(socioExistente);
+        repository.save(socioExistente);
 
         // 4 Retornar en formato DTO
         return socioMapper.toResponseDTO(socioExistente);
     }
 
-
-
 }
-
-
-
-
-
-

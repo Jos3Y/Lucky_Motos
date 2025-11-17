@@ -9,6 +9,8 @@ import Citas from './pages/Citas'
 import Repuestos from './pages/Repuestos'
 import Tecnicos from './pages/Tecnicos'
 import Reportes from './pages/Reportes'
+import Especialidades from './pages/Especialidades'
+import Usuarios from './pages/Usuarios'
 
 function App() {
   return (
@@ -65,6 +67,26 @@ function App() {
             <ProtectedRoute requiredRoles={['ADMIN', 'RECEPCIONISTA']}>
               <Layout>
                 <Reportes />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/especialidades"
+          element={
+            <ProtectedRoute requiredRoles={['ADMIN', 'RECEPCIONISTA']}>
+              <Layout>
+                <Especialidades />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute requiredRoles={['ADMIN']}>
+              <Layout>
+                <Usuarios />
               </Layout>
             </ProtectedRoute>
           }

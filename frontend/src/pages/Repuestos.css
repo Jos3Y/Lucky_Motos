@@ -88,3 +88,30 @@
   background-color: #f8f9fa;
 }
 
+.table-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #2c3e50;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: #1a252f;
+}
+
+.btn-link.danger {
+  color: #e74c3c;
+}
+
+.btn-link.danger:hover {
+  color: #c0392b;
+}
+

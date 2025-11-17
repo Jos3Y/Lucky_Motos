@@ -19,6 +19,7 @@ public interface RepuestoMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Repuesto toEntity(RepuestoRequestDTO dto);
     
+    @Mapping(target = "estado", expression = "java(repuesto.getEstado() != null ? repuesto.getEstado().name() : null)")
     RepuestoResponseDTO toResponseDTO(Repuesto repuesto);
 }
 

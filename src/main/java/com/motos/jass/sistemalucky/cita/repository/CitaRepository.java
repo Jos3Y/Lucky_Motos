@@ -23,5 +23,15 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     
     @Query("SELECT c FROM Cita c WHERE c.fechaCita BETWEEN :fechaInicio AND :fechaFin")
     List<Cita> findByRangoFechas(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
+
+    @Query("SELECT c.tecnico.id, c.tecnico.socio.nombre, c.tecnico.socio.apellidos, COUNT(c) " +
+            "FROM Cita c WHERE c.tecnico IS NOT NULL AND c.fechaCita BETWEEN :inicio AND :fin " +
+            "GROUP BY c.tecnico.id, c.tecnico.socio.nombre, c.tecnico.socio.apellidos " +
+            "ORDER BY COUNT(c) DESC")
+    List<Object[]> contarCitasPorTecnico(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
+
+    @Query("SELECT c.fechaCita, COUNT(c) FROM Cita c WHERE c.fechaCita BETWEEN :inicio AND :fin " +
+            "GROUP BY c.fechaCita ORDER BY COUNT(c) DESC")
+    List<Object[]> contarCitasPorDia(@Param("inicio") LocalDate inicio, @Param("fin") LocalDate fin);
 }
 

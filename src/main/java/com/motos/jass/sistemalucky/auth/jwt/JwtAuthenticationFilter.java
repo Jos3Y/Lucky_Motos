@@ -46,9 +46,23 @@ import java.util.stream.Collectors;
             if (jwtUtil.isTokenValid(token, userDetails)) {
                 // Convertir roles a GrantedAuthority con prefijo ROLE_
                 Set<String> roles = jwtUtil.extractRoles(token);
+                System.out.println("🔐 Roles extraídos del token: " + roles);
                 var authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .map(role -> {
+                            // Normalizar: remover ROLE_ si existe, luego agregarlo
+                            String normalizedRole = role.toUpperCase().trim();
+                            // Remover prefijo ROLE_ si ya existe
+                            if (normalizedRole.startsWith("ROLE_")) {
+                                normalizedRole = normalizedRole.substring(5); // Remover "ROLE_"
+                            }
+                            // Agregar prefijo ROLE_ (Spring Security lo requiere)
+                            normalizedRole = "ROLE_" + normalizedRole;
+                            System.out.println("🔐 Rol normalizado: " + normalizedRole);
+                            return new SimpleGrantedAuthority(normalizedRole);
+                        })
                         .collect(Collectors.toList());
+                
+                System.out.println("🔐 Authorities creadas: " + authorities);
 
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

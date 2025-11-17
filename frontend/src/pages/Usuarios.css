@@ -1,0 +1,53 @@
+.usuarios-page {
+  padding: 25px;
+}
+
+.usuarios-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.usuarios-table th,
+.usuarios-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.usuario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.usuario-form .form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.usuario-form .form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.usuario-form input,
+.usuario-form select {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .usuario-form .form-row {
+    flex-direction: column;
+  }
+}
+

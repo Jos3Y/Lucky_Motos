@@ -14,7 +14,6 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/motos")
-@PreAuthorize("hasRole('SOCIO')") //  Protege
 public class MotoController {
 
     @Autowired
@@ -39,6 +38,7 @@ public class MotoController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO', 'CLIENTE', 'SOCIO')")
     public ResponseEntity<List<MotoResponseDTO>> listarMotos() {
         return ResponseEntity.ok(motoServiceImpl.listarMotos());
     }
@@ -55,6 +55,22 @@ public class MotoController {
     public ResponseEntity<List<MotoResponseDTO>> listarActivas() {
         List<MotoResponseDTO> motos = motoServiceImpl.listarActivas();
         return ResponseEntity.ok(motos);
+    }
+
+    // OBTENER MODELOS ÚNICOS
+    @GetMapping("/modelos")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO')")
+    public ResponseEntity<List<String>> obtenerModelosUnicos() {
+        List<String> modelos = motoServiceImpl.obtenerModelosUnicos();
+        return ResponseEntity.ok(modelos);
+    }
+
+    // OBTENER DATOS DE MOTO POR MODELO
+    @GetMapping("/modelo/{modelo}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA', 'TECNICO')")
+    public ResponseEntity<MotoResponseDTO> obtenerMotoPorModelo(@PathVariable String modelo) {
+        MotoResponseDTO moto = motoServiceImpl.obtenerMotoPorModelo(modelo);
+        return ResponseEntity.ok(moto);
     }
 
 

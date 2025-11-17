@@ -1,0 +1,568 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.3)
+
+2025-11-16T15:57:21.511+01:00  INFO 6884 --- [sistemalucky] [           main] c.m.j.s.SistemaluckyApplication          : Starting SistemaluckyApplication v0.0.1-SNAPSHOT using Java 17.0.12 with PID 6884 (C:\xampp\htdocs\sistemamotoservice\target\sistemamotoservice-0.0.1-SNAPSHOT.war started by yno20 in C:\xampp\htdocs\sistemamotoservice)
+2025-11-16T15:57:21.524+01:00  INFO 6884 --- [sistemalucky] [           main] c.m.j.s.SistemaluckyApplication          : The following 1 profile is active: "dev"
+2025-11-16T15:57:23.308+01:00  INFO 6884 --- [sistemalucky] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-16T15:57:23.483+01:00  INFO 6884 --- [sistemalucky] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 154 ms. Found 12 JPA repository interfaces.
+2025-11-16T15:57:26.375+01:00  INFO 6884 --- [sistemalucky] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-11-16T15:57:26.443+01:00  INFO 6884 --- [sistemalucky] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-11-16T15:57:26.444+01:00  INFO 6884 --- [sistemalucky] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-11-16T15:57:26.662+01:00  INFO 6884 --- [sistemalucky] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-11-16T15:57:26.667+01:00  INFO 6884 --- [sistemalucky] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 5033 ms
+2025-11-16T15:57:27.607+01:00  INFO 6884 --- [sistemalucky] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-16T15:57:28.050+01:00  INFO 6884 --- [sistemalucky] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-11-16T15:57:30.235+01:00  INFO 6884 --- [sistemalucky] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-11-16T15:57:30.842+01:00  INFO 6884 --- [sistemalucky] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-16T15:57:30.925+01:00  INFO 6884 --- [sistemalucky] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-11-16T15:57:31.398+01:00  INFO 6884 --- [sistemalucky] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@70697478
+2025-11-16T15:57:31.401+01:00  INFO 6884 --- [sistemalucky] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-11-16T15:57:31.448+01:00  WARN 6884 --- [sistemalucky] [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-11-16T15:57:31.455+01:00  WARN 6884 --- [sistemalucky] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-16T15:57:31.489+01:00  INFO 6884 --- [sistemalucky] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-11-16T15:57:34.649+01:00  INFO 6884 --- [sistemalucky] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    alter table arranque 
+       drop 
+       foreign key FKsei4d5lqlk8rtmopn0bb436y
+Hibernate: 
+    alter table cita 
+       drop 
+       foreign key FKk26n4u0ec76o6mxopkp1fqnsc
+Hibernate: 
+    alter table cita 
+       drop 
+       foreign key FKsxc4326byjc90ac4ho47543yu
+Hibernate: 
+    alter table cita 
+       drop 
+       foreign key FKckf8og82b6f27507jtum0mmr9
+Hibernate: 
+    alter table cita 
+       drop 
+       foreign key FKck4xju0ehu00wycoy4osou08b
+Hibernate: 
+    alter table cita_repuesto 
+       drop 
+       foreign key FKnkptvfupjeghtvbj0fs37ecx8
+Hibernate: 
+    alter table cita_repuesto 
+       drop 
+       foreign key FK4ecaayqu0rwmljtr89tysb3r0
+Hibernate: 
+    alter table disponibilidad_tecnico 
+       drop 
+       foreign key FKe6eoc9vviafd7dfiwktl24i4u
+Hibernate: 
+    alter table instalacion 
+       drop 
+       foreign key FKj80r5861ek2v3y490c9fa5epd
+Hibernate: 
+    alter table instalacion 
+       drop 
+       foreign key FKhm4y00l0lio0yuhwtvbm0qlrl
+Hibernate: 
+    alter table instalacion_socio 
+       drop 
+       foreign key FKkg36c1hg3hkpoixtiuh68nwh9
+Hibernate: 
+    alter table instalacion_socio 
+       drop 
+       foreign key FKbv627fmjihqigx6ryi70yn7ax
+Hibernate: 
+    alter table mantenimiento_socio 
+       drop 
+       foreign key FK6gka80q0pvpheubn3r3ii64x5
+Hibernate: 
+    alter table mantenimiento_socio 
+       drop 
+       foreign key FKbydj8w0d20qi4cexnrg5jdwir
+Hibernate: 
+    alter table mantenimientos 
+       drop 
+       foreign key FK4ntc8f6926m9gq68o1ji7l4k1
+Hibernate: 
+    alter table mantenimientos 
+       drop 
+       foreign key FK3n2stgq5mlva36idsua87hs5o
+Hibernate: 
+    alter table mantenimientos 
+       drop 
+       foreign key FKj3oue33x9jgf3w2igjuw8brud
+Hibernate: 
+    alter table moto 
+       drop 
+       foreign key FKejl7agvklori0ygu4jbohcgap
+Hibernate: 
+    alter table reserva 
+       drop 
+       foreign key FK2vyleyjw1ppit1cqr1adwipe4
+Hibernate: 
+    alter table reserva 
+       drop 
+       foreign key FKnstevvv5eyhtffgquothgobqd
+Hibernate: 
+    alter table reserva 
+       drop 
+       foreign key FK8jr9f0gutoq4ark2si2t7ysq7
+Hibernate: 
+    alter table rol_socio 
+       drop 
+       foreign key FKbecmfsp55p6kffhp4jmhpkhr7
+Hibernate: 
+    alter table rol_socio 
+       drop 
+       foreign key FKtfhwq2mxhbf14hqfmv9ko0c8c
+Hibernate: 
+    alter table socio_vivienda 
+       drop 
+       foreign key FK597a8ku6g4y0bgg6shu6k9cd6
+Hibernate: 
+    alter table socio_vivienda 
+       drop 
+       foreign key FKmdq20p6i9kgxosbn4k7dd9g7u
+Hibernate: 
+    alter table tecnico 
+       drop 
+       foreign key FKgn1vtholclx7nm11nneeot3yi
+Hibernate: 
+    alter table vivienda 
+       drop 
+       foreign key FKg3yerdl6tvvcolgvi9nbgsb2f
+Hibernate: 
+    drop table if exists arranque
+Hibernate: 
+    drop table if exists categoria_mantenimiento
+Hibernate: 
+    drop table if exists cita
+Hibernate: 
+    drop table if exists cita_repuesto
+Hibernate: 
+    drop table if exists disponibilidad_tecnico
+Hibernate: 
+    drop table if exists instalacion
+Hibernate: 
+    drop table if exists instalacion_socio
+Hibernate: 
+    drop table if exists mantenimiento_socio
+Hibernate: 
+    drop table if exists mantenimientos
+Hibernate: 
+    drop table if exists moto
+Hibernate: 
+    drop table if exists repuesto
+Hibernate: 
+    drop table if exists reserva
+Hibernate: 
+    drop table if exists rol
+Hibernate: 
+    drop table if exists rol_socio
+Hibernate: 
+    drop table if exists sector
+Hibernate: 
+    drop table if exists socio
+Hibernate: 
+    drop table if exists socio_vivienda
+Hibernate: 
+    drop table if exists tecnico
+Hibernate: 
+    drop table if exists tipo_servicio
+Hibernate: 
+    drop table if exists vivienda
+Hibernate: 
+    create table arranque (
+        estado_instalacion date,
+        fecha_solicitud date,
+        id_arranque bigint not null auto_increment,
+        vivienda_id bigint,
+        estado_arranque varchar(255),
+        nro_arranque varchar(255),
+        tipo_arranque varchar(255),
+        primary key (id_arranque)
+    ) engine=InnoDB
+Hibernate: 
+    create table categoria_mantenimiento (
+        costo_base float(53),
+        estado bit,
+        created_at datetime(6),
+        id_categoria bigint not null auto_increment,
+        descripcion_categoria varchar(255),
+        nombre_categoria varchar(255),
+        primary key (id_categoria)
+    ) engine=InnoDB
+Hibernate: 
+    create table cita (
+        fecha_cita date not null,
+        hora_cita time(6) not null,
+        monto_pago_inicial DECIMAL(10,2),
+        pago_inicial bit not null,
+        created_at datetime(6),
+        id_cita bigint not null auto_increment,
+        moto_id bigint not null,
+        socio_id bigint not null,
+        tecnico_id bigint,
+        tipo_servicio_id bigint,
+        updated_at datetime(6),
+        codigo_cita varchar(50),
+        comprobante_pago_url varchar(500),
+        motivo_estado varchar(500),
+        observaciones TEXT,
+        estado enum ('CANCELADA','COMPLETADA','CONFIRMADA','EN_PROCESO','PENDIENTE') not null,
+        primary key (id_cita)
+    ) engine=InnoDB
+Hibernate: 
+    create table cita_repuesto (
+        cantidad integer not null,
+        precio_unitario DECIMAL(10,2) not null,
+        cita_id bigint not null,
+        id_cita_repuesto bigint not null auto_increment,
+        repuesto_id bigint not null,
+        primary key (id_cita_repuesto)
+    ) engine=InnoDB
+Hibernate: 
+    create table disponibilidad_tecnico (
+        disponible bit not null,
+        hora_fin time(6) not null,
+        hora_inicio time(6) not null,
+        id_disponibilidad bigint not null auto_increment,
+        tecnico_id bigint not null,
+        dia_semana enum ('DOMINGO','JUEVES','LUNES','MARTES','MIERCOLES','SABADO','VIERNES') not null,
+        primary key (id_disponibilidad)
+    ) engine=InnoDB
+Hibernate: 
+    create table instalacion (
+        costo_estimado float(53),
+        fecha_instlacion date,
+        arranque_id bigint not null,
+        id_mantenimiento bigint not null auto_increment,
+        id_socio_registro bigint not null,
+        primary key (id_mantenimiento)
+    ) engine=InnoDB
+Hibernate: 
+    create table instalacion_socio (
+        created_at date,
+        id_instalacion_socio bigint not null auto_increment,
+        instalacion_id bigint not null,
+        socios_id bigint not null,
+        rol_en_instalacion varchar(255),
+        primary key (id_instalacion_socio)
+    ) engine=InnoDB
+Hibernate: 
+    create table mantenimiento_socio (
+        created_at datetime(6),
+        id_mantenimiento_socio bigint not null auto_increment,
+        mantenimiento_id bigint not null,
+        socio_id bigint not null,
+        rol_en_mantenimiento varchar(255),
+        primary key (id_mantenimiento_socio)
+    ) engine=InnoDB
+Hibernate: 
+    create table mantenimientos (
+        arranque_id bigint not null,
+        categoria_mantenimiento_id bigint not null,
+        fecha_mantenimiento datetime(6),
+        id_mantenimiento bigint not null auto_increment,
+        socio_registro_id bigint not null,
+        descripcion_mantenimiento varchar(255),
+        tipo_mantenimiento varchar(255),
+        primary key (id_mantenimiento)
+    ) engine=InnoDB
+Hibernate: 
+    create table moto (
+        created_at datetime(6),
+        id_moto bigint not null auto_increment,
+        socio_id bigint,
+        updated_at datetime(6),
+        estado varchar(255) not null,
+        kilometraje_actual varchar(255),
+        marca varchar(255),
+        modelo varchar(255),
+        nro_serie_motor varchar(255),
+        numero_chasis varchar(255),
+        placa varchar(255),
+        tipo_combustible varchar(255),
+        primary key (id_moto)
+    ) engine=InnoDB
+Hibernate: 
+    create table repuesto (
+        precio DECIMAL(10,2) not null,
+        stock integer not null,
+        created_at datetime(6),
+        id_repuesto bigint not null auto_increment,
+        updated_at datetime(6),
+        marca varchar(100),
+        modelo_compatible varchar(100),
+        nombre varchar(200) not null,
+        estado enum ('AGOTADO','BAJO_STOCK','DISPONIBLE') not null,
+        primary key (id_repuesto)
+    ) engine=InnoDB
+Hibernate: 
+    create table reserva (
+        fecha_reserva date,
+        hora_reserva time(6),
+        created_at datetime(6),
+        id_reserva bigint not null auto_increment,
+        moto_id bigint,
+        registro_por bigint,
+        socio_id bigint,
+        updated_at datetime(6),
+        codigo_reserva varchar(255),
+        comentario TEXT,
+        estado_registro enum ('ACTIVO','ELIMINADO') not null,
+        estado_reserva enum ('CANCELADA','FINALIZADA','PENDIENTE') not null,
+        primary key (id_reserva)
+    ) engine=InnoDB
+Hibernate: 
+    create table rol (
+        created_at datetime(6),
+        id_rol bigint not null auto_increment,
+        updated_at datetime(6),
+        descripcion varchar(255),
+        primary key (id_rol)
+    ) engine=InnoDB
+Hibernate: 
+    create table rol_socio (
+        created_at datetime(6),
+        id_rol_socio bigint not null auto_increment,
+        rol_id bigint,
+        socio_id bigint,
+        updated_at datetime(6),
+        descripcion varchar(255),
+        estado varchar(255),
+        primary key (id_rol_socio)
+    ) engine=InnoDB
+Hibernate: 
+    create table sector (
+        id_sector bigint not null auto_increment,
+        descripcion varchar(255),
+        nombre_sector varchar(255),
+        primary key (id_sector)
+    ) engine=InnoDB
+Hibernate: 
+    create table socio (
+        estado bit,
+        fecha_nacimiento date,
+        fecha_registro date,
+        created_at datetime(6),
+        id_socio bigint not null auto_increment,
+        updated_at datetime(6),
+        apellidos varchar(255),
+        contrasena varchar(255),
+        correo varchar(255),
+        dni varchar(255),
+        estado_civil varchar(255),
+        genero varchar(255),
+        nombre varchar(255),
+        telefono varchar(255),
+        primary key (id_socio)
+    ) engine=InnoDB
+Hibernate: 
+    create table socio_vivienda (
+        created_at date,
+        fecha_asignacion date,
+        updated_at date,
+        id_socio_vivienda bigint not null auto_increment,
+        socio_id bigint,
+        vivienda_id bigint,
+        estado varchar(255),
+        observaciones varchar(255),
+        rol_en_vivienda varchar(255),
+        primary key (id_socio_vivienda)
+    ) engine=InnoDB
+Hibernate: 
+    create table tecnico (
+        created_at datetime(6),
+        id_tecnico bigint not null auto_increment,
+        socio_id bigint not null,
+        updated_at datetime(6),
+        especialidad varchar(100),
+        estado enum ('DISPONIBLE','INACTIVO','OCUPADO') not null,
+        primary key (id_tecnico)
+    ) engine=InnoDB
+Hibernate: 
+    create table tipo_servicio (
+        duracion_estimada_minutos integer,
+        precio_base DECIMAL(10,2) not null,
+        id_tipo_servicio bigint not null auto_increment,
+        nombre varchar(100) not null,
+        descripcion TEXT,
+        primary key (id_tipo_servicio)
+    ) engine=InnoDB
+Hibernate: 
+    create table vivienda (
+        activo bit not null,
+        created_at date,
+        nro_familias integer,
+        updated_at date,
+        id_vivienda bigint not null auto_increment,
+        sector_id bigint,
+        direccion varchar(255),
+        manzana varchar(255),
+        numero_lote varchar(255),
+        primary key (id_vivienda)
+    ) engine=InnoDB
+Hibernate: 
+    alter table cita 
+       add constraint UK3fvjyjp0arx4ysbb0xipxqtei unique (codigo_cita)
+Hibernate: 
+    alter table instalacion 
+       add constraint UKkfk2ip0v4nc3d9cyrd8f8x6pn unique (arranque_id)
+Hibernate: 
+    alter table tecnico 
+       add constraint UKpjcreqxql3roif40dfka1nyfk unique (socio_id)
+Hibernate: 
+    alter table arranque 
+       add constraint FKsei4d5lqlk8rtmopn0bb436y 
+       foreign key (vivienda_id) 
+       references vivienda (id_vivienda)
+Hibernate: 
+    alter table cita 
+       add constraint FKk26n4u0ec76o6mxopkp1fqnsc 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table cita 
+       add constraint FKsxc4326byjc90ac4ho47543yu 
+       foreign key (moto_id) 
+       references moto (id_moto)
+Hibernate: 
+    alter table cita 
+       add constraint FKckf8og82b6f27507jtum0mmr9 
+       foreign key (tecnico_id) 
+       references tecnico (id_tecnico)
+Hibernate: 
+    alter table cita 
+       add constraint FKck4xju0ehu00wycoy4osou08b 
+       foreign key (tipo_servicio_id) 
+       references tipo_servicio (id_tipo_servicio)
+Hibernate: 
+    alter table cita_repuesto 
+       add constraint FKnkptvfupjeghtvbj0fs37ecx8 
+       foreign key (cita_id) 
+       references cita (id_cita)
+Hibernate: 
+    alter table cita_repuesto 
+       add constraint FK4ecaayqu0rwmljtr89tysb3r0 
+       foreign key (repuesto_id) 
+       references repuesto (id_repuesto)
+Hibernate: 
+    alter table disponibilidad_tecnico 
+       add constraint FKe6eoc9vviafd7dfiwktl24i4u 
+       foreign key (tecnico_id) 
+       references tecnico (id_tecnico)
+Hibernate: 
+    alter table instalacion 
+       add constraint FKj80r5861ek2v3y490c9fa5epd 
+       foreign key (arranque_id) 
+       references arranque (id_arranque)
+Hibernate: 
+    alter table instalacion 
+       add constraint FKhm4y00l0lio0yuhwtvbm0qlrl 
+       foreign key (id_socio_registro) 
+       references socio (id_socio)
+Hibernate: 
+    alter table instalacion_socio 
+       add constraint FKkg36c1hg3hkpoixtiuh68nwh9 
+       foreign key (instalacion_id) 
+       references instalacion (id_mantenimiento)
+Hibernate: 
+    alter table instalacion_socio 
+       add constraint FKbv627fmjihqigx6ryi70yn7ax 
+       foreign key (socios_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table mantenimiento_socio 
+       add constraint FK6gka80q0pvpheubn3r3ii64x5 
+       foreign key (mantenimiento_id) 
+       references mantenimientos (id_mantenimiento)
+Hibernate: 
+    alter table mantenimiento_socio 
+       add constraint FKbydj8w0d20qi4cexnrg5jdwir 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table mantenimientos 
+       add constraint FK4ntc8f6926m9gq68o1ji7l4k1 
+       foreign key (arranque_id) 
+       references arranque (id_arranque)
+Hibernate: 
+    alter table mantenimientos 
+       add constraint FK3n2stgq5mlva36idsua87hs5o 
+       foreign key (categoria_mantenimiento_id) 
+       references categoria_mantenimiento (id_categoria)
+Hibernate: 
+    alter table mantenimientos 
+       add constraint FKj3oue33x9jgf3w2igjuw8brud 
+       foreign key (socio_registro_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table moto 
+       add constraint FKejl7agvklori0ygu4jbohcgap 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table reserva 
+       add constraint FK2vyleyjw1ppit1cqr1adwipe4 
+       foreign key (moto_id) 
+       references moto (id_moto)
+Hibernate: 
+    alter table reserva 
+       add constraint FKnstevvv5eyhtffgquothgobqd 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table reserva 
+       add constraint FK8jr9f0gutoq4ark2si2t7ysq7 
+       foreign key (registro_por) 
+       references socio (id_socio)
+Hibernate: 
+    alter table rol_socio 
+       add constraint FKbecmfsp55p6kffhp4jmhpkhr7 
+       foreign key (rol_id) 
+       references rol (id_rol)
+Hibernate: 
+    alter table rol_socio 
+       add constraint FKtfhwq2mxhbf14hqfmv9ko0c8c 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table socio_vivienda 
+       add constraint FK597a8ku6g4y0bgg6shu6k9cd6 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table socio_vivienda 
+       add constraint FKmdq20p6i9kgxosbn4k7dd9g7u 
+       foreign key (vivienda_id) 
+       references vivienda (id_vivienda)
+Hibernate: 
+    alter table tecnico 
+       add constraint FKgn1vtholclx7nm11nneeot3yi 
+       foreign key (socio_id) 
+       references socio (id_socio)
+Hibernate: 
+    alter table vivienda 
+       add constraint FKg3yerdl6tvvcolgvi9nbgsb2f 
+       foreign key (sector_id) 
+       references sector (id_sector)
+2025-11-16T15:57:36.412+01:00  INFO 6884 --- [sistemalucky] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-16T15:57:38.406+01:00  INFO 6884 --- [sistemalucky] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-16T15:57:39.899+01:00  WARN 6884 --- [sistemalucky] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-16T15:57:39.949+01:00  INFO 6884 --- [sistemalucky] [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2025-11-16T15:57:40.390+01:00  INFO 6884 --- [sistemalucky] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-11-16T15:57:42.031+01:00  INFO 6884 --- [sistemalucky] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-11-16T15:57:42.094+01:00  INFO 6884 --- [sistemalucky] [           main] c.m.j.s.SistemaluckyApplication          : Started SistemaluckyApplication in 21.699 seconds (process running for 22.556)

@@ -17,8 +17,6 @@ public class RolController {
     private RolResponseDTO rolResponseDTO;
     private final RolServiceImpl rolServiceImpl;
 
-    @PreAuthorize("hasRole('SOCIO')")
-
     @PostMapping("/registro")
     public ResponseEntity<RolResponseDTO> crearRol(@RequestBody RolRequestDTO dto) {
         System.out.println("Entrando a la peticion"+dto);

@@ -1,5 +1,6 @@
 package com.motos.jass.sistemalucky.tiposervicio.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.motos.jass.sistemalucky.cita.entity.Cita;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,7 @@ public class TipoServicio {
     private Integer duracionEstimadaMinutos;
     
     @OneToMany(mappedBy = "tipoServicio", cascade = CascadeType.ALL)
+    @JsonIgnore // Evitar loop infinito en serialización JSON
     private List<Cita> citas = new ArrayList<>();
 }
 

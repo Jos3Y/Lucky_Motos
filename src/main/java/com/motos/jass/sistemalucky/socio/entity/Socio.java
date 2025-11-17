@@ -5,7 +5,6 @@ import com.motos.jass.sistemalucky.Mantenimiento.entity.Mantenimiento;
 import com.motos.jass.sistemalucky.Mantenimiento.entity.MantenimientoSocio;
 import com.motos.jass.sistemalucky.instalacion.entity.Instalacion;
 import com.motos.jass.sistemalucky.instalacion.entity.InstalacionSocio;
-import com.motos.jass.sistemalucky.moto.entity.Moto;
 import com.motos.jass.sistemalucky.reserva.entity.Reserva;
 import com.motos.jass.sistemalucky.vivienda.entity.SocioVivienda;
 import jakarta.persistence.*;
@@ -52,8 +51,7 @@ public class Socio {
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL)
     private List<Reserva> reservaS = new ArrayList<>();
 
-    @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL)
-    private List<Moto> motos = new ArrayList<>();
+    // Relación con Moto eliminada - ahora Moto pertenece a Cliente, no a Socio
 
     @OneToMany(mappedBy = "socio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<RolSocio> RolSocios = new ArrayList<>();
