@@ -37,7 +37,7 @@ const Layout = ({ children }) => {
       path: '/tecnicos',
       label: 'Técnicos',
       icon: '👷',
-      roles: ['ADMIN', 'RECEPCIONISTA', 'TECNICO']
+      roles: ['ADMIN']
     },
     {
       path: '/especialidades',
@@ -96,9 +96,9 @@ const Layout = ({ children }) => {
         </nav>
 
         <div className="sidebar-footer">
-          <Link to="/ajustes" className="nav-item">
+          <Link to="/mi-perfil" className="nav-item">
             <span className="nav-icon">⚙️</span>
-            {sidebarOpen && <span className="nav-label">Ajustes</span>}
+            {sidebarOpen && <span className="nav-label">Mi Perfil</span>}
           </Link>
           <button onClick={handleLogout} className="nav-item logout-btn">
             <span className="nav-icon">🚪</span>

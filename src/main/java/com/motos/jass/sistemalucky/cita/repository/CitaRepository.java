@@ -14,7 +14,10 @@ import java.util.Optional;
 public interface CitaRepository extends JpaRepository<Cita, Long> {
     Optional<Cita> findByCodigoCita(String codigoCita);
     List<Cita> findByClienteId(Long clienteId);
-    List<Cita> findByTecnicoId(Long tecnicoId);
+    
+    @Query("SELECT c FROM Cita c WHERE c.tecnico.id = :tecnicoId")
+    List<Cita> findByTecnicoId(@Param("tecnicoId") Long tecnicoId);
+    
     List<Cita> findByEstado(Cita.EstadoCita estado);
     List<Cita> findByFechaCita(LocalDate fecha);
     

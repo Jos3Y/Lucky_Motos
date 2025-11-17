@@ -1,6 +1,7 @@
 package com.motos.jass.sistemalucky.socio.service;
 
 import com.motos.jass.sistemalucky.share.service.BaseServiceImpl;
+import com.motos.jass.sistemalucky.socio.dto.RolSocioRequestDTO;
 import com.motos.jass.sistemalucky.socio.dto.SocioRequestDTO;
 import com.motos.jass.sistemalucky.socio.dto.SocioResponseDTO;
 import com.motos.jass.sistemalucky.socio.entity.Socio;
@@ -50,7 +51,12 @@ public class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements So
 
         Socio socio = socioMapper.toEntity(request);
         Socio savedSocio = repository.save(socio);
-        return socioMapper.toResponseDTO(savedSocio);
+
+        asignarRolSiCorresponde(savedSocio.getCorreo(), request.getRol());
+
+        SocioResponseDTO responseDTO = socioMapper.toResponseDTO(savedSocio);
+        responseDTO.setRol(obtenerRolActivo(savedSocio));
+        return responseDTO;
     }
 
     // lista solo la información del DTO
@@ -67,6 +73,7 @@ public class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements So
                     dto.setGenero(socio.getGenero());
                     dto.setFechaNacimiento(socio.getFechaNacimiento());
                     dto.setEstadoCivil(socio.getEstadoCivil());
+                    dto.setRol(obtenerRolActivo(socio));
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -97,8 +104,58 @@ public class SocioServiceImpl extends BaseServiceImpl<Socio, Long> implements So
         // 3 Guardar los cambios
         repository.save(socioExistente);
 
+        // 3.1 Actualizar rol si es necesario
+        actualizarRolSiCorresponde(socioExistente, request.getRol());
+
         // 4 Retornar en formato DTO
-        return socioMapper.toResponseDTO(socioExistente);
+        SocioResponseDTO responseDTO = socioMapper.toResponseDTO(socioExistente);
+        responseDTO.setRol(obtenerRolActivo(socioExistente));
+        return responseDTO;
+    }
+
+    private void asignarRolSiCorresponde(String correoSocio, String rol) {
+        if (rol == null || rol.isBlank()) {
+            return;
+        }
+        RolSocioRequestDTO requestDTO = new RolSocioRequestDTO();
+        requestDTO.setCorreoSocio(correoSocio);
+        requestDTO.setNombreRol(rol.toUpperCase().startsWith("ROLE_") ? rol.toUpperCase() : "ROLE_" + rol.toUpperCase());
+        rolSocioService.asignarRol(requestDTO);
+    }
+
+    private void actualizarRolSiCorresponde(Socio socioExistente, String nuevoRol) {
+        if (nuevoRol == null || nuevoRol.isBlank()) {
+            return;
+        }
+        String rolNormalizado = nuevoRol.toUpperCase().startsWith("ROLE_") ? nuevoRol.toUpperCase() : "ROLE_" + nuevoRol.toUpperCase();
+        String rolActual = obtenerRolActivo(socioExistente);
+
+        if (rolActual != null && !rolActual.equalsIgnoreCase(rolNormalizado)) {
+            RolSocioRequestDTO quitar = new RolSocioRequestDTO();
+            quitar.setCorreoSocio(socioExistente.getCorreo());
+            quitar.setNombreRol(rolActual);
+            rolSocioService.quitarRol(quitar);
+        }
+        if (!rolNormalizado.equalsIgnoreCase(rolActual)) {
+            RolSocioRequestDTO asignar = new RolSocioRequestDTO();
+            asignar.setCorreoSocio(socioExistente.getCorreo());
+            asignar.setNombreRol(rolNormalizado);
+            rolSocioService.asignarRol(asignar);
+        }
+    }
+
+    private String obtenerRolActivo(Socio socio) {
+        if (socio.getRolSocios() == null) {
+            return null;
+        }
+        return socio.getRolSocios().stream()
+                .filter(rolSocio -> {
+                    String estado = rolSocio.getEstado();
+                    return "ACTIVO".equalsIgnoreCase(estado);
+                })
+                .map(rolSocio -> rolSocio.getRol().getDescripcion())
+                .findFirst()
+                .orElse(null);
     }
 
 }

@@ -15,4 +15,5 @@ public class SocioResponseDTO {
     private String genero;
     private LocalDate fechaNacimiento;
     private String estadoCivil;
+    private String rol; // Rol activo asignado al socio
 }

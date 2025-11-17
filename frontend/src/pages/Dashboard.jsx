@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import DashboardCharts from '../components/DashboardCharts'
+import DashboardTecnico from './DashboardTecnico'
 import { citasAPI, repuestosAPI, tecnicosAPI } from '../services/api'
 import './Dashboard.css'
 
 const Dashboard = () => {
+  const { hasRole } = useAuth()
+  
+  // Si es técnico, mostrar dashboard específico
+  if (hasRole('TECNICO')) {
+    return <DashboardTecnico />
+  }
   const [stats, setStats] = useState({
     totalCitas: 0,
     citasHoy: 0,

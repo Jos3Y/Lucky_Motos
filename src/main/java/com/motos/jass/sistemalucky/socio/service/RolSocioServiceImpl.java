@@ -33,6 +33,7 @@ public class RolSocioServiceImpl extends BaseServiceImpl<RolSocio, Long> impleme
         this.rolSocioRepository = rolSocioRepository;
         this.rolSocioMapper = rolSocioMapper;
     }
+    @Override
     @Transactional
     public RolSocioResponseDTO asignarRol(RolSocioRequestDTO request){
 
@@ -64,6 +65,7 @@ public class RolSocioServiceImpl extends BaseServiceImpl<RolSocio, Long> impleme
         return rolSocioMapper.toResponseDTO(guardado);
     }
 
+    @Override
     public RolSocioResponseDTO quitarRol(RolSocioRequestDTO request){
 
         Socio socio = socioRepository.findByCorreo(request.getCorreoSocio())

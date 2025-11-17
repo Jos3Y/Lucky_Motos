@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Swal from 'sweetalert2'
 import { sociosAPI } from '../services/api'
 import './Usuarios.css'
+
+const ROLE_OPTIONS = [
+  { value: 'ROLE_ADMIN', label: 'Administrador' },
+  { value: 'ROLE_RECEPCIONISTA', label: 'Recepcionista' },
+  { value: 'ROLE_TECNICO', label: 'Técnico' }
+]
 
 const initialUser = {
   nombre: '',
@@ -11,7 +17,8 @@ const initialUser = {
   dni: '',
   genero: 'MASCULINO',
   estadoCivil: 'SOLTERO',
-  contrasena: ''
+  contrasena: '',
+  rol: 'ROLE_RECEPCIONISTA'
 }
 
 const Usuarios = () => {
@@ -20,6 +27,15 @@ const Usuarios = () => {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState(initialUser)
   const [editing, setEditing] = useState(null)
+
+  const roleOptions = useMemo(() => ROLE_OPTIONS, [])
+
+  const getRoleLabel = (rol) => {
+    if (!rol) return 'Sin rol'
+    const normalized = rol.toUpperCase().startsWith('ROLE_') ? rol.toUpperCase() : `ROLE_${rol.toUpperCase()}`
+    const option = roleOptions.find(opt => opt.value === normalized)
+    return option ? option.label : normalized.replace('ROLE_', '')
+  }
 
   useEffect(() => {
     loadUsuarios()
@@ -48,7 +64,8 @@ const Usuarios = () => {
         dni: usuario.dni || '',
         genero: usuario.genero || 'MASCULINO',
         estadoCivil: usuario.estadoCivil || 'SOLTERO',
-        contrasena: ''
+        contrasena: '',
+        rol: usuario.rol || 'ROLE_RECEPCIONISTA'
       })
     } else {
       setEditing(null)
@@ -60,11 +77,12 @@ const Usuarios = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      const payload = { ...formData }
       if (editing) {
-        await sociosAPI.update(editing.idSocio, formData)
+        await sociosAPI.update(editing.idSocio, payload)
         Swal.fire('Actualizado', 'Usuario actualizado correctamente', 'success')
       } else {
-        await sociosAPI.create(formData)
+        await sociosAPI.create(payload)
         Swal.fire('Creado', 'Usuario creado correctamente', 'success')
       }
       setShowForm(false)
@@ -117,13 +135,14 @@ const Usuarios = () => {
               <th>Teléfono</th>
               <th>Género</th>
               <th>Estado civil</th>
+              <th>Rol</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {usuarios.length === 0 ? (
               <tr>
-                <td colSpan="7" className="no-data">No hay usuarios registrados</td>
+                <td colSpan="8" className="no-data">No hay usuarios registrados</td>
               </tr>
             ) : (
               usuarios.map((user) => (
@@ -134,6 +153,11 @@ const Usuarios = () => {
                   <td>{user.telefono || '-'}</td>
                   <td>{user.genero || '-'}</td>
                   <td>{user.estadoCivil || '-'}</td>
+                  <td>
+                    <span className={`role-badge role-${(user.rol || '').toLowerCase()}`}>
+                      {getRoleLabel(user.rol)}
+                    </span>
+                  </td>
                   <td>
                     <div className="table-actions">
                       <button className="btn-link" onClick={() => openForm(user)}>Editar</button>
@@ -194,7 +218,7 @@ const Usuarios = () => {
                   />
                 </div>
               </div>
-              <div className="form-row">
+              <div className="form-row triple">
                 <div className="form-group">
                   <label>DNI</label>
                   <input
@@ -234,6 +258,27 @@ const Usuarios = () => {
                   onChange={(e) => setFormData({ ...formData, contrasena: e.target.value })}
                   required={!editing}
                 />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Rol</label>
+                  <select
+                    value={formData.rol}
+                    onChange={(e) => setFormData({ ...formData, rol: e.target.value })}
+                  >
+                    {roleOptions.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group helper-text">
+                  <p>El rol define los permisos dentro del sistema. Solo el administrador ve todos los módulos.</p>
+                  <ul>
+                    <li>Administrador: acceso completo</li>
+                    <li>Recepcionista: Citas, reportes operativos</li>
+                    <li>Técnico: Agenda personal y actualizaciones</li>
+                  </ul>
+                </div>
               </div>
               <div className="modal-actions">
                 <button className="btn-secondary" type="button" onClick={() => setShowForm(false)}>Cancelar</button>

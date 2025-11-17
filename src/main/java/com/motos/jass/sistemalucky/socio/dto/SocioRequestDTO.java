@@ -15,4 +15,5 @@ public class SocioRequestDTO {
     private LocalDate fechaNacimiento;
     private String estadoCivil;
     private String contrasena;
+    private String rol;
 }

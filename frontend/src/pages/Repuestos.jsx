@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import Swal from 'sweetalert2'
 import { repuestosAPI } from '../services/api'
 import './Repuestos.css'
@@ -12,6 +13,8 @@ const initialFormData = {
 }
 
 const Repuestos = () => {
+  const { hasRole } = useAuth()
+  const esTecnico = hasRole('TECNICO')
   const [repuestos, setRepuestos] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
@@ -163,20 +166,27 @@ const Repuestos = () => {
     <div className="repuestos-page">
       <div className="page-header">
         <h1>Gestión de Repuestos</h1>
-        <button
-          className="btn-primary"
-          onClick={() => {
-            if (showForm && !editingRepuesto) {
-              setShowForm(false)
-            } else {
-              setFormData(initialFormData)
-              setEditingRepuesto(null)
-              setShowForm(!showForm)
-            }
-          }}
-        >
-          {showForm ? 'Cerrar formulario' : 'Agregar Repuesto'}
-        </button>
+        {!esTecnico && (
+          <button
+            className="btn-primary"
+            onClick={() => {
+              if (showForm && !editingRepuesto) {
+                setShowForm(false)
+              } else {
+                setFormData(initialFormData)
+                setEditingRepuesto(null)
+                setShowForm(!showForm)
+              }
+            }}
+          >
+            {showForm ? 'Cerrar formulario' : 'Agregar Repuesto'}
+          </button>
+        )}
+        {esTecnico && (
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>
+            Solo visualización - No puedes crear, editar ni eliminar repuestos
+          </p>
+        )}
       </div>
 
       {showForm && (
@@ -301,13 +311,13 @@ const Repuestos = () => {
               <th>Modelo</th>
               <th>Stock</th>
               <th>Estado</th>
-              <th>Acción</th>
+              {!esTecnico && <th>Acción</th>}
             </tr>
           </thead>
           <tbody>
             {repuestos.length === 0 ? (
               <tr>
-                <td colSpan="6" className="no-data">No hay repuestos registrados</td>
+                <td colSpan={esTecnico ? "5" : "6"} className="no-data">No hay repuestos registrados</td>
               </tr>
             ) : (
               repuestos.map(repuesto => (
@@ -322,22 +332,26 @@ const Repuestos = () => {
                     </span>
                   </td>
                   <td>
-                    <div className="table-actions">
-                      <button
-                        type="button"
-                        className="btn-link"
-                        onClick={() => handleEditRepuesto(repuesto)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        type="button"
-                        className="btn-link danger"
-                        onClick={() => handleDeleteRepuesto(repuesto)}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+                    {!esTecnico ? (
+                      <div className="table-actions">
+                        <button
+                          type="button"
+                          className="btn-link"
+                          onClick={() => handleEditRepuesto(repuesto)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-link danger"
+                          onClick={() => handleDeleteRepuesto(repuesto)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ color: '#9ca3af', fontSize: '12px' }}>Solo lectura</span>
+                    )}
                   </td>
                 </tr>
               ))

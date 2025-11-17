@@ -11,6 +11,7 @@ import Tecnicos from './pages/Tecnicos'
 import Reportes from './pages/Reportes'
 import Especialidades from './pages/Especialidades'
 import Usuarios from './pages/Usuarios'
+import MiPerfil from './pages/MiPerfil'
 
 function App() {
   return (
@@ -54,7 +55,7 @@ function App() {
         <Route
           path="/tecnicos"
           element={
-            <ProtectedRoute requiredRoles={['ADMIN', 'RECEPCIONISTA', 'TECNICO']}>
+            <ProtectedRoute requiredRoles={['ADMIN']}>
               <Layout>
                 <Tecnicos />
               </Layout>
@@ -87,6 +88,16 @@ function App() {
             <ProtectedRoute requiredRoles={['ADMIN']}>
               <Layout>
                 <Usuarios />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mi-perfil"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <MiPerfil />
               </Layout>
             </ProtectedRoute>
           }

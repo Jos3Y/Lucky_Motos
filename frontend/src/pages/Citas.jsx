@@ -57,6 +57,7 @@ const Citas = () => {
     yapeCodigo: ''
   })
   const [voucherData, setVoucherData] = useState(null)
+  const [tecnicoId, setTecnicoId] = useState(null)
   const puedeProcesarPago = formData.pagoInicial && formData.montoPagoInicial > 0 && (!editingCita || !editingCita.pagoInicial)
 
   const resetPagoSimulado = () => {
@@ -83,11 +84,17 @@ const Citas = () => {
 
   useEffect(() => {
     if (hasRole('TECNICO') && user?.id) {
-      loadCitasHoy()
+      loadTecnicoId()
     } else {
       loadCitas()
     }
   }, [user])
+
+  useEffect(() => {
+    if (hasRole('TECNICO') && tecnicoId) {
+      loadCitasTecnico()
+    }
+  }, [tecnicoId])
 
   useEffect(() => {
     setCurrentPage(1)
@@ -145,14 +152,28 @@ const Citas = () => {
     }
   }
 
-  const loadCitasHoy = async () => {
+  const loadTecnicoId = async () => {
+    try {
+      const response = await tecnicosAPI.getBySocioId(user.id)
+      if (response.data?.id) {
+        setTecnicoId(response.data.id)
+      }
+    } catch (error) {
+      console.error('Error cargando técnico:', error)
+    }
+  }
+
+  const loadCitasTecnico = async () => {
     try {
       setLoading(true)
-      const response = await citasAPI.getHoy()
+      const response = await citasAPI.getByTecnico(tecnicoId)
       const citasData = Array.isArray(response.data) ? response.data : []
-      setCitas(sortCitas(citasData))
+      // Filtrar solo las de hoy
+      const hoy = new Date().toISOString().slice(0, 10)
+      const citasHoy = citasData.filter(c => c.fechaCita === hoy)
+      setCitas(sortCitas(citasHoy))
     } catch (error) {
-      console.error('Error cargando citas de hoy:', error)
+      console.error('Error cargando citas del técnico:', error)
       setCitas([])
     } finally {
       setLoading(false)
@@ -175,11 +196,11 @@ const Citas = () => {
           return { data: [] }
         })
       ])
-      
+
       const modelosData = Array.isArray(modelosRes.data) ? modelosRes.data : []
       const tecnicosData = Array.isArray(tecnicosRes.data) ? tecnicosRes.data : []
       const tiposData = Array.isArray(tiposRes.data) ? tiposRes.data : []
-      
+
       setModelos(modelosData)
       setTecnicos(tecnicosData)
       setTecnicosDisponibles(tecnicosData)
@@ -232,10 +253,10 @@ const Citas = () => {
           if (disp.diaSemana !== diaSemana || !disp.disponible) {
             return false
           }
-          
+
           const horaInicio = disp.horaInicio || '00:00'
           const horaFin = disp.horaFin || '23:59'
-          
+
           return horaCita >= horaInicio && horaCita <= horaFin
         })
       }
@@ -244,7 +265,7 @@ const Citas = () => {
     })
 
     setTecnicosDisponibles(disponibles)
-    
+
     if (formData.tecnicoId && !disponibles.find(t => t.id === parseInt(formData.tecnicoId))) {
       setFormData(prev => ({ ...prev, tecnicoId: '' }))
     }
@@ -252,7 +273,7 @@ const Citas = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     // Validar campos requeridos
     if (!formData.nombreCompleto || formData.nombreCompleto.trim() === '') {
       Swal.fire({
@@ -303,7 +324,7 @@ const Citas = () => {
 
       // Buscar o crear/actualizar cliente
       let clienteIdFinal = formData.clienteId
-      
+
       if (!clienteIdFinal && formData.dni) {
         try {
           const clienteRes = await clientesAPI.buscarPorDni(formData.dni)
@@ -325,7 +346,7 @@ const Citas = () => {
           telefono: formData.telefono.trim(),
           direccion: formData.direccion || null
         }
-        
+
         const nuevoCliente = await clientesAPI.create(clienteData)
         clienteIdFinal = nuevoCliente.data.id
       } else {
@@ -434,7 +455,7 @@ const Citas = () => {
           timer: 2000
         })
       }
-      
+
       resetForm()
       loadCitas()
     } catch (error) {
@@ -448,16 +469,69 @@ const Citas = () => {
     }
   }
 
+  const handleCambiarEstado = async (cita) => {
+    const { value: nuevoEstado } = await Swal.fire({
+      title: 'Cambiar estado de la cita',
+      input: 'select',
+      inputOptions: {
+        'PENDIENTE': 'Pendiente',
+        'CONFIRMADA': 'Confirmada',
+        'EN_PROCESO': 'En Proceso',
+        'COMPLETADA': 'Completada',
+        'CANCELADA': 'Cancelada'
+      },
+      inputValue: cita.estado,
+      showCancelButton: true,
+      confirmButtonText: 'Actualizar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#2c3e50'
+    })
+
+    if (nuevoEstado) {
+      try {
+        await citasAPI.updateEstado(cita.id, {
+          estado: nuevoEstado,
+          motivoEstado: `Estado actualizado por el técnico`
+        })
+        Swal.fire({
+          icon: 'success',
+          title: 'Estado actualizado',
+          text: 'El estado de la cita ha sido actualizado',
+          confirmButtonColor: '#2c3e50',
+          timer: 2000
+        })
+        if (hasRole('TECNICO')) {
+          loadCitasTecnico()
+        } else {
+          loadCitas()
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'No se pudo actualizar el estado',
+          confirmButtonColor: '#2c3e50'
+        })
+      }
+    }
+  }
+
   const handleEdit = (cita) => {
+    // Si es técnico, solo permitir cambiar estado
+    if (hasRole('TECNICO')) {
+      handleCambiarEstado(cita)
+      return
+    }
+
     setEditingCita(cita)
-    const nombreCompleto = cita.cliente 
+    const nombreCompleto = cita.cliente
       ? `${cita.cliente.nombre || ''} ${cita.cliente.apellidos || ''}`.trim()
       : ''
-    
+
     const urlComprobante = cita.comprobantePagoUrl || null
     setComprobanteUrl(urlComprobante)
-    setPreviewImage(urlComprobante ? `http://localhost:8080${urlComprobante}` : null)
-    
+    setPreviewImage(urlComprobante ? urlComprobante : null)
+
     setFormData({
       clienteId: cita.cliente?.id || null,
       nombreCompleto: nombreCompleto,
@@ -710,7 +784,7 @@ const Citas = () => {
         })
         return
       }
-      
+
       // Validar tipo de archivo
       if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
         Swal.fire({
@@ -721,9 +795,9 @@ const Citas = () => {
         })
         return
       }
-      
+
       setFormData(prev => ({ ...prev, comprobantePago: file }))
-      
+
       // Crear previsualización si es imagen
       if (file.type.startsWith('image/')) {
         const reader = new FileReader()
@@ -757,8 +831,8 @@ const Citas = () => {
       <div className="page-header">
         <h1>Gestión de Citas</h1>
         {(hasRole('ADMIN') || hasRole('RECEPCIONISTA')) && (
-          <button 
-            className="btn-primary" 
+          <button
+            className="btn-primary"
             onClick={() => {
               if (showForm) {
                 resetForm()
@@ -772,6 +846,11 @@ const Citas = () => {
             {showForm ? 'Cancelar' : 'Registrar nueva cita'}
           </button>
         )}
+        {hasRole('TECNICO') && (
+          <p style={{ color: '#6b7280', fontSize: '14px', marginTop: '10px' }}>
+            Solo puedes ver y cambiar el estado de tus citas asignadas
+          </p>
+        )}
       </div>
 
       {showForm && (
@@ -784,8 +863,8 @@ const Citas = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Nombre completo *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.nombreCompleto}
                     onChange={(e) => setFormData({ ...formData, nombreCompleto: e.target.value })}
                     placeholder="Ej: Juan Pérez García"
@@ -794,8 +873,8 @@ const Citas = () => {
                 </div>
                 <div className="form-group">
                   <label>DNI</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.dni}
                     onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
                     placeholder="Ingrese el DNI"
@@ -805,8 +884,8 @@ const Citas = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Teléfono / WhatsApp *</label>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     value={formData.telefono}
                     onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                     placeholder="Ingrese el teléfono"
@@ -815,8 +894,8 @@ const Citas = () => {
                 </div>
                 <div className="form-group">
                   <label>Correo electrónico</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={formData.correo}
                     onChange={(e) => setFormData({ ...formData, correo: e.target.value })}
                     placeholder="Ingrese el correo"
@@ -826,8 +905,8 @@ const Citas = () => {
               <div className="form-row">
                 <div className="form-group full-width">
                   <label>Dirección</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.direccion}
                     onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
                     placeholder="Ingrese la dirección completa"
@@ -860,8 +939,8 @@ const Citas = () => {
                 </div>
                 <div className="form-group">
                   <label>Placa *</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.placa}
                     onChange={(e) => setFormData({ ...formData, placa: e.target.value.toUpperCase() })}
                     placeholder="Ej: ABC-123"
@@ -872,8 +951,8 @@ const Citas = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Marca</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.marca}
                     onChange={(e) => setFormData({ ...formData, marca: e.target.value })}
                     placeholder="Se completa automáticamente"
@@ -883,8 +962,8 @@ const Citas = () => {
                 </div>
                 <div className="form-group">
                   <label>Año</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     value={formData.anio}
                     onChange={(e) => setFormData({ ...formData, anio: e.target.value })}
                     placeholder="Ingrese el año"
@@ -1085,16 +1164,16 @@ const Citas = () => {
                         className="file-input"
                       />
                       <label htmlFor="comprobantePago" className="file-label">
-                        {formData.comprobantePago 
-                          ? `📄 ${formData.comprobantePago.name}` 
-                          : comprobanteUrl 
+                        {formData.comprobantePago
+                          ? `📄 ${formData.comprobantePago.name}`
+                          : comprobanteUrl
                             ? '📄 Cambiar comprobante'
                             : '📎 Subir comprobante'}
                       </label>
                     </div>
                     {formData.comprobantePago && (
                       <small className="info-text">
-                        Archivo seleccionado: {formData.comprobantePago.name} 
+                        Archivo seleccionado: {formData.comprobantePago.name}
                         ({(formData.comprobantePago.size / 1024).toFixed(2)} KB)
                       </small>
                     )}
@@ -1106,9 +1185,9 @@ const Citas = () => {
                     {/* Previsualización de imagen */}
                     {previewImage && (
                       <div className="preview-container">
-                        <img 
-                          src={previewImage} 
-                          alt="Vista previa del comprobante" 
+                        <img
+                          src={previewImage}
+                          alt="Vista previa del comprobante"
                           className="preview-image"
                         />
                         <button
@@ -1191,16 +1270,16 @@ const Citas = () => {
                     <div className="action-buttons">
                       {(hasRole('ADMIN') || hasRole('RECEPCIONISTA')) && (
                         <>
-                          <button 
-                            className="btn-edit" 
+                          <button
+                            className="btn-edit"
                             onClick={() => handleEdit(cita)}
                             title="Editar"
                           >
                             ✏️
                           </button>
                           {hasRole('ADMIN') && (
-                            <button 
-                              className="btn-delete" 
+                            <button
+                              className="btn-delete"
                               onClick={() => handleDelete(cita)}
                               title="Eliminar"
                             >
@@ -1210,8 +1289,8 @@ const Citas = () => {
                         </>
                       )}
                       {hasRole('TECNICO') && (
-                        <button 
-                          className="btn-edit" 
+                        <button
+                          className="btn-edit"
                           onClick={() => handleEdit(cita)}
                           title="Cambiar estado"
                         >
