@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 @RestController
@@ -32,15 +33,12 @@ public class ReportesController {
     @PreAuthorize("hasAnyRole('ADMIN','RECEPCIONISTA')")
     public ResponseEntity<byte[]> exportarExcel(
             @RequestParam(defaultValue = "ULTIMOS_6_MESES") String periodo) {
-        try {
-            byte[] bytes = reportesService.generarExcel(periodo).readAllBytes();
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reportes.xlsx")
-                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                    .body(bytes);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo generar el archivo", e);
-        }
+        ByteArrayInputStream stream = reportesService.generarExcel(periodo);
+        byte[] bytes = stream.readAllBytes();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reportes.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
     }
 }
 

@@ -53,7 +53,7 @@ public class SocioController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        socioService.delete(id);
+        socioService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
