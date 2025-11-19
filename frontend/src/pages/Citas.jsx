@@ -115,6 +115,7 @@ const Citas = () => {
     }
   }, [formData.modelo])
 
+
   const sortCitas = (lista = []) => {
     return [...lista].sort((a, b) => {
       const fechaA = new Date(`${a.fechaCita || ''}T${a.horaCita || '00:00'}`)
@@ -1041,6 +1042,31 @@ const Citas = () => {
                     <small className="error-text">No hay tipos de servicio disponibles</small>
                   )}
                 </div>
+                {formData.tipoServicioId && (
+                  <div className="form-group">
+                    <label>Precio del servicio</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value={
+                        (() => {
+                          const servicioSeleccionado = tiposServicio.find(ts => 
+                            (ts.id_tipo_servicio || ts.id)?.toString() === formData.tipoServicioId.toString()
+                          )
+                          return servicioSeleccionado 
+                            ? `S/ ${(servicioSeleccionado.precioBase || servicioSeleccionado.precio_base || 0).toFixed(2)}`
+                            : 'S/ 0.00'
+                        })()
+                      }
+                      style={{
+                        backgroundColor: '#f5f5f5',
+                        cursor: 'not-allowed',
+                        fontWeight: '600',
+                        color: '#2c3e50'
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div className="form-row">
                 <div className="form-group full-width">
