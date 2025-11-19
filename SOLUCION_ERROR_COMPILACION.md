@@ -3,6 +3,7 @@
 ## 🔍 Diagnóstico del Error
 
 El error muestra:
+
 ```
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile
 ```
@@ -20,11 +21,13 @@ java -version
 ```
 
 **Debe mostrar:**
+
 ```
 java version "17.x.x" o superior
 ```
 
 **Si muestra versión menor a 17:**
+
 - Instalar Java 17 JDK desde: https://adoptium.net/
 - Configurar JAVA_HOME en variables de entorno
 
@@ -33,16 +36,19 @@ java version "17.x.x" o superior
 ## ✅ Paso 2: Verificar Carpeta Correcta
 
 **IMPORTANTE:** El proyecto debe estar en:
+
 ```
 C:\xampp\htdocs\sistemamotoservice
 ```
 
 **NO en:**
+
 ```
 C:\xampp\htdocs\Lucky_Motos  ❌
 ```
 
 **Solución:**
+
 ```powershell
 # Verificar ubicación actual
 pwd
@@ -66,6 +72,7 @@ mvn clean compile -DskipTests -e -X
 ```
 
 O más simple:
+
 ```powershell
 mvn clean compile -DskipTests -e
 ```
@@ -127,10 +134,11 @@ type src\main\resources\application.properties
 ```
 
 **Debe tener:**
+
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/lucky_motos
 spring.datasource.username=root
-spring.datasource.password=
+spring.datasource.password=   ok
 ```
 
 ---
@@ -138,6 +146,7 @@ spring.datasource.password=
 ## ✅ Paso 6: Verificar Java en VS Code
 
 En VS Code:
+
 1. Abrir archivo `.java` cualquiera
 2. Verificar que VS Code detecta Java correctamente
 3. Si no detecta, instalar extensión "Extension Pack for Java"
@@ -175,20 +184,25 @@ mvn compile -DskipTests -e
 ## 📋 Errores Comunes y Soluciones
 
 ### Error: "package does not exist"
+
 **Causa:** Dependencias no descargadas
 **Solución:**
+
 ```powershell
 mvn dependency:resolve
 mvn clean compile -DskipTests
 ```
 
 ### Error: "cannot find symbol"
+
 **Causa:** Clases faltantes o imports incorrectos
 **Solución:** Verificar que todos los archivos `.java` estén en la estructura correcta
 
 ### Error: "source release 17 requires target release 17"
+
 **Causa:** Java incorrecto o configuración Maven
 **Solución:**
+
 ```powershell
 # Verificar JAVA_HOME
 echo $env:JAVA_HOME
@@ -198,8 +212,10 @@ echo $env:JAVA_HOME
 ```
 
 ### Error: "maven-compiler-plugin"
+
 **Causa:** Plugin Maven desactualizado
 **Solución:**
+
 ```powershell
 mvn clean
 mvn compile -DskipTests -U
@@ -228,9 +244,9 @@ npm run dev
 ## 📞 Si el Problema Persiste
 
 Comparte el resultado completo de:
+
 ```powershell
 mvn clean compile -DskipTests -e
 ```
 
 Esto mostrará **exactamente qué archivo y qué línea tiene el error**.
-
