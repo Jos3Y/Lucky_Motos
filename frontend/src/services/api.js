@@ -1,7 +1,10 @@
 import axios from 'axios'
 
-// Configurar axios - sin baseURL para usar rutas relativas con proxy
-// axios.defaults.baseURL = '/api' // Comentado para usar proxy de Vite
+// Configurar axios - usar baseURL desde variable de entorno en producción
+const API_URL = import.meta.env.VITE_API_URL || '';
+if (API_URL) {
+  axios.defaults.baseURL = API_URL;
+}
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')

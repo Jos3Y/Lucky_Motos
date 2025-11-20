@@ -32,7 +32,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../src/main/resources/static',
+    outDir: process.env.VITE_BUILD_OUT_DIR || '../src/main/resources/static',
     emptyOutDir: true,
     copyPublicDir: true,
     rollupOptions: {
@@ -40,6 +40,9 @@ export default defineConfig({
         main: './index.html'
       }
     }
+  },
+  define: {
+    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:8081')
   },
   publicDir: 'public'
 })
