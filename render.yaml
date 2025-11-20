@@ -1,9 +1,10 @@
 services:
   - type: web
     name: lucky-motos-backend
-    env: java
+    runtime: java
     buildCommand: mvn clean install -DskipTests
     startCommand: java -jar target/sistemamotoservice-0.0.1-SNAPSHOT.war
+    plan: free
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -11,5 +12,14 @@ services:
         value: 10000
       - key: JAVA_OPTS
         value: -Xmx512m -Xms256m
-    plan: free
+      - key: DATABASE_URL
+        value: jdbc:mysql://turntable.proxy.rlwy.net:52275/railway?useSSL=false&serverTimezone=UTC
+      - key: DB_USERNAME
+        value: root
+      - key: DB_PASSWORD
+        value: QFlowpmeYpsvrnRYgspWEWnbOECjwRGR
+      - key: JWT_SECRET
+        value: una_clave_secreta_muy_larga_y_segura_12345678901234567890
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://lucky-motos-app-2025.vercel.app
 
