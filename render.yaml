@@ -1,7 +1,6 @@
 services:
   - type: web
     name: lucky-motos-backend
-    runtime: java
     buildCommand: mvn clean install -DskipTests
     startCommand: java -jar target/sistemamotoservice-0.0.1-SNAPSHOT.war
     plan: free
