@@ -11,7 +11,7 @@ export default defineConfig({
     },
     watch: {
       usePolling: true,
-      interval: 1000 
+      interval: 1000
     },
     proxy: {
       '/api': {
@@ -32,7 +32,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: process.env.VITE_BUILD_OUT_DIR || '../src/main/resources/static',
+    outDir: process.env.VITE_BUILD_OUT_DIR || (process.env.VERCEL ? 'dist' : '../src/main/resources/static'),
     emptyOutDir: true,
     copyPublicDir: true,
     rollupOptions: {

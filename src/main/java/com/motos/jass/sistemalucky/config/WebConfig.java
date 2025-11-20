@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Recursos estáticos de React
         registry.addResourceHandler("/assets/**")
                 .addResourceLocations("classpath:/static/assets/");
-        
+
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
     }
@@ -38,11 +38,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                    "http://localhost:3002",
-                    "http://localhost:5173",
-                    "https://*.vercel.app",
-                    "https://*.netlify.app"
-                )
+                        "http://localhost:3002",
+                        "http://localhost:5173",
+                        "https://*.vercel.app",
+                        "https://*.netlify.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
@@ -52,7 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         // Orígenes permitidos (se pueden configurar desde variables de entorno)
         String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
         if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
@@ -60,20 +59,18 @@ public class WebConfig implements WebMvcConfigurer {
         } else {
             // Por defecto, permitir localhost y dominios comunes de Vercel/Netlify
             configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:*",
-                "https://*.vercel.app",
-                "https://*.netlify.app"
-            ));
+                    "http://localhost:*",
+                    "https://*.vercel.app",
+                    "https://*.netlify.app"));
         }
-        
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
-
