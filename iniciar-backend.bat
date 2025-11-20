@@ -6,6 +6,11 @@ echo.
 echo Puerto: 8081
 echo.
 cd /d "%~dp0"
+
+REM Configurar Java 17
+set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.17.10-hotspot"
+set "PATH=%JAVA_HOME%\bin;%PATH%"
+
 echo Compilando proyecto...
 call mvn clean compile -DskipTests
 if %errorlevel% neq 0 (

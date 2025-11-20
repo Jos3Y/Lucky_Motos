@@ -468,6 +468,12 @@ INSERT INTO `reserva` (`fecha_reserva`, `hora_reserva`, `created_at`, `id_reserv
 ('2025-12-10', '14:30:00.000000', NULL, 9, 2, 1, 4, NULL, NULL, 'Balanceo de ruedas', 'ACTIVO', 'PENDIENTE'),
 ('2025-12-11', '12:00:00.000000', NULL, 10, 10, 1, 7, NULL, NULL, 'Chequeo de luces', 'ACTIVO', 'PENDIENTE');
 
+-- Ajuste de datos: algunas reservas estaban apuntando a socios inexistentes (p.ej. 12)
+-- Reasignamos cualquier socio_id inválido al socio 3 antes de crear la FK
+UPDATE `reserva`
+SET `socio_id` = 3
+WHERE `socio_id` NOT IN (SELECT `id_socio` FROM `socio`);
+
 -- --------------------------------------------------------
 
 --
